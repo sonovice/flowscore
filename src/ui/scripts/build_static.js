@@ -3,11 +3,11 @@ import { rmdirSync } from 'node:fs';
 
 const sourceDir = 'dist';
 const targetDir = 'dist-static'
- 
+
 // Delete target dir
 try {
-    rmdirSync(targetDir, {recursive: true, force: true});
-} catch (err) {}
+    rmdirSync(targetDir, { recursive: true, force: true });
+} catch (err) { }
 
 const files = {};
 
@@ -35,8 +35,8 @@ let importStatements = Object.entries(files).map(([key, value], index) => {
 let exportFunction = `
 export default function getFile(key) {
     const files = {
-        ${Object.entries(files).map(([key, value], index) => 
-          `'${key}': { data: file_${index}, type: '${value.type}' }`).join(',\n        ')}
+        ${Object.entries(files).map(([key, value], index) =>
+    `'${key}': { data: file_${index}, type: '${value.type}' }`).join(',\n        ')}
     };
 
     const entry = files[key];

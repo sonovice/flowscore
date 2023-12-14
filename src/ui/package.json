@@ -1,0 +1,32 @@
+{
+  "name": "flowscore-ui",
+  "author": {
+    "name": "Simon Waloschek",
+    "email": "waloschek@pm.me"
+  },
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && bun run scripts/build_static.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pako": "^2.1.0",
+    "robust-websocket": "^1.0.0",
+    "solid-js": "^1.8.7",
+    "verovio": "^4.0.1",
+    "virtual-scroller": "^1.12.4"
+  },
+  "devDependencies": {
+    "@solidjs/router": "^0.10.3",
+    "@types/pako": "^2.0.3",
+    "@types/verovio": "^3.13.4",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.9",
+    "vite-plugin-solid": "^2.8.0"
+  }
+}

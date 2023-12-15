@@ -128,6 +128,11 @@ function Score() {
     }
   })
 
+  window.addEventListener('resize', () => {
+    setSvgStrings([]);
+    virtualScroller.setItems(svgStrings());
+  })
+
 
   return (
     <>

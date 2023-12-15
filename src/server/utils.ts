@@ -1,7 +1,8 @@
 import {DOMParser} from 'xmldom';
 import {select} from 'xpath';
+import os from "node:os";
 
-function compareStaffNums(a: string, b: string): number {
+export function compareStaffNums(a: string, b: string): number {
   // Hilfsfunktion zum Extrahieren der numerischen Teile
   const extractNumbers = (str: string) => (str.match(/\d+/g) || []).map(Number);
 
@@ -55,4 +56,21 @@ export function splitMei(fullMei: string, staves: string): string {
     }
   });
   return mei.toString();
+}
+
+
+export function getLocalIp(): string {
+  const netInterfaces = os.networkInterfaces();
+  for (const netInterfaceName in netInterfaces) {
+    const netInterface = netInterfaces[netInterfaceName];
+    if (netInterface) {
+      for (const iface of netInterface) {
+        // Look vor IPv4 and only internal address
+        if (iface.family === 'IPv4' && !iface.internal) {
+          return iface.address;
+        }
+      }
+    }
+  }
+  throw new Error('Unable to retrieve local network IP address.');
 }

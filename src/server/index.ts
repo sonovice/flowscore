@@ -1,9 +1,7 @@
 import { cors } from '@elysiajs/cors';
 import { Elysia } from "elysia";
 import getStaticFile from '../ui/dist-static';
-import { displayClients, splitMei } from "./utils";
-import packageJsonServer from '../../package.json';
-import packageJsonUI from '../ui/package.json';
+import {compareStaffNums, displayClients, splitMei} from "./utils";
 import pako from 'pako';
 
 
@@ -22,10 +20,23 @@ const COLOR_GREEN_BOX = '\x1b[42m\x1b[97m';
 const subscribedStaves: Record<string, number> = {};
 let providerConnected: boolean = false;
 
-export function serve(port: number) {
+export function serve(host: string, port: number) {
   const app = new Elysia({
     websocket: { perMessageDeflate: true },
   })
+    .get('stats', () => {
+      let response = '';
+      const totalCount = Object.values(subscribedStaves).reduce((a, b) => a + b, 0);
+      response += `Connected clients (${totalCount})\n`;
+      response += "=================\n";
+      const sortedStaffNums = Object.keys(subscribedStaves).sort(compareStaffNums);
+      sortedStaffNums.forEach(staffNum => {
+        const count = subscribedStaves[staffNum];
+        const bar = '█'.repeat(count);
+        response += `Staff ${staffNum}:\t${bar} (${count})\n`;
+      });
+      return response;
+    })
     // This handler will serve the UI pages for the clients
     .get('*', async (params) => {
       let path = params.path;
@@ -52,11 +63,12 @@ export function serve(port: number) {
       message(ws, message: any) {
         switch (ws.data.query.type) {
           case 'provider':
+            console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PROVIDER New MEI data${COLOR_RESET}`);
             Object.keys(subscribedStaves).forEach(async staves => {
               const mei = splitMei(message.toString(), staves).toString();
               const compressed = pako.deflate(mei);
               app.server!.publish(staves, compressed, false);
-              console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PUBLISHED Staves "${staves}"${COLOR_RESET}`);
+              // console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PUBLISHED Staves "${staves}"${COLOR_RESET}`);
             });
             break;
         }
@@ -102,7 +114,7 @@ export function serve(port: number) {
     .use(cors())
     .listen({ port, hostname: '0.0.0.0' });
 
-  console.log(`FlowScore server v${packageJsonServer.version} with UI v${packageJsonUI.version} is running.`);
-  console.log(`Connect provider to "ws://${app.server?.hostname}:${app.server?.port}/ws?type=provider"`);
-  console.log(`Connect clients to "http://${app.server?.hostname}:${app.server?.port}/"`);
+  console.log(`🎶 Server is running.`);
+  console.log(`   Connect provider to "ws://${host}:${port}/ws?type=provider"`);
+  console.log(`   Connect clients to "http://${host}:${port}/"`);
 }

@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.viewer-system > svg {
+    max-height: 100vh;
+}

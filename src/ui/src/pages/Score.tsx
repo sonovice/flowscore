@@ -1,9 +1,9 @@
-import { useSearchParams, useBeforeLeave } from "@solidjs/router";
-import { createSignal, onMount } from 'solid-js';
-import { worker as vrvWorker } from "../score";
+import {useSearchParams, useBeforeLeave} from "@solidjs/router";
+import {createSignal, onMount} from 'solid-js';
+import {worker as vrvWorker} from "../score";
 import VirtualScroller from 'virtual-scroller/dom'
-import { VerovioOptions } from "verovio";
-import pako, { Data } from 'pako';
+import {VerovioOptions} from "verovio";
+import pako, {Data} from 'pako';
 
 function Score() {
   let containerRef: HTMLDivElement;
@@ -16,7 +16,6 @@ function Score() {
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
   const [params] = useSearchParams();
   const staves = params.staves
-
 
 
   function connect() {
@@ -32,8 +31,8 @@ function Score() {
       const reader = new FileReader();
       reader.onload = e => {
         if (e.target !== null) {
-          const decompressed = pako.inflate(e.target.result as Data, { to: "string" });
-          vrvWorker.postMessage({ cmd: 'loadData', param: decompressed });
+          const decompressed = pako.inflate(e.target.result as Data, {to: "string"});
+          vrvWorker.postMessage({cmd: 'loadData', param: decompressed});
         }
       }
       reader.readAsArrayBuffer(data);
@@ -54,7 +53,9 @@ function Score() {
 
     const param: VerovioOptions = {
       adjustPageHeight: true,
+      svgViewBox: true,
       // scaleToPageSize: true,
+      // shrinkToFit: true,
       header: 'none',
       footer: 'none',
       justifyVertically: false,
@@ -91,7 +92,7 @@ function Score() {
       viewerRef,
       [],
       renderSvgString,
-      { scrollableContainer: containerRef }
+      {scrollableContainer: containerRef}
     );
 
     document.addEventListener('keydown', (e) => {
@@ -102,7 +103,7 @@ function Score() {
         const screenHeight = containerRef.clientHeight;
 
         if (e.key === "ArrowLeft") {
-          containerRef.scrollTo({ top: containerRef.scrollTop - (screenHeight * 0.75), behavior: 'smooth' });
+          containerRef.scrollTo({top: containerRef.scrollTop - (screenHeight * 1.0), behavior: 'smooth'});
         } else if (e.key === "ArrowRight") {
           for (let i = 0; i < boundingRects.length; i++) {
             if (boundingRects[i].bottom > screenHeight) {
@@ -112,7 +113,7 @@ function Score() {
               //   targetSystem.style.backgroundColor = '';
               // }, 1500)
               const nextSystemTop = targetSystem.getBoundingClientRect().top + containerRef.scrollTop;
-              containerRef.scrollTo({ top: nextSystemTop, behavior: 'smooth' });
+              containerRef.scrollTo({top: nextSystemTop, behavior: 'smooth'});
               break;
             }
           }
@@ -141,7 +142,8 @@ function Score() {
 }
 
 function renderSvgString(svgString: string): HTMLElement {
-  return (<div class="viewer-system transition-all duration-1000 border-b-4 border-b-gray-100" innerHTML={svgString}></div>) as HTMLElement
+  return (<div class="viewer-system max-h-screen transition-all duration-1000 border-b-4 border-b-gray-100"
+               innerHTML={svgString}></div>) as HTMLElement
 }
 
 export default Score

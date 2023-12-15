@@ -112,7 +112,7 @@ function Score() {
               // setTimeout(() => {
               //   targetSystem.style.backgroundColor = '';
               // }, 1500)
-              const nextSystemTop = targetSystem.getBoundingClientRect().top + containerRef.scrollTop;
+              const nextSystemTop = targetSystem.getBoundingClientRect().top + containerRef.scrollTop + 1; // +1 to make sure that screen filling pages will not break next key press
               containerRef.scrollTo({top: nextSystemTop, behavior: 'smooth'});
               break;
             }

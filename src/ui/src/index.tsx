@@ -1,38 +1,20 @@
-import { render } from "solid-js/web";
-import { HashRouter, Route } from "@solidjs/router";
+import {render} from "solid-js/web";
+import {SettingsProvider} from "./contexts/SettingsContext.tsx";
 import "./index.css";
+import App from "./App.tsx";
 
-import Home from "./pages/Home";
-import Score from "./pages/Score";
+/* Fixes screen height computation, see https://css-tricks.com/the-trick-to-viewport-units-on-mobile/ */
+document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + 'px');
 
-// Wake Lock
-async function requestWakeLock() {
-  if ("wakeLock" in navigator) {
-    try {
-
-      const wakeLock = await navigator.wakeLock.request("screen");
-      console.log("Wake Lock is active");
-      wakeLock.addEventListener("release", async () => {
-        await requestWakeLock();
-      })
-
-    } catch (err: any) {
-      // The Wake Lock request has failed - usually system related, such as battery.
-      console.warn(`${err.name}, ${err.message}`);
-    }
-  }
-  else {
-    console.log("Wake Lock not supported on this device.")
-  }
-}
-requestWakeLock();
-
+// Prevent zoom gestures
+window.addEventListener('dblclick', function (event) {
+  event.preventDefault();
+}, {passive: false});
 
 const root = document.getElementById("root")!;
 
 render(() => (
-  <HashRouter>
-    <Route path="/" component={Home} />
-    <Route path="/score" component={Score} />
-  </HashRouter>
+  <SettingsProvider>
+    <App/>
+  </SettingsProvider>
 ), root);

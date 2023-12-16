@@ -5,3 +5,23 @@
 .viewer-system > svg {
     max-height: 100vh;
 }
+
+/* Prevents zoom gestures anmd pull to refresh*/
+html, body {
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+}
+
+/* Prevents user text/object selection */
+* {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Standard Syntax */
+}
+
+/* Fixes screen height computation, see https://css-tricks.com/the-trick-to-viewport-units-on-mobile/ */
+.h-screen {
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--vh, 1vh) * 100);
+}

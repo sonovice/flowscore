@@ -1,7 +1,7 @@
 import { cors } from '@elysiajs/cors';
 import { Elysia } from "elysia";
 import getStaticFile from '../ui/dist-static';
-import {compareStaffNums, displayClients, splitMei} from "./utils";
+import {cleanMei, compareStaffNums, splitMei} from "./utils";
 import pako from 'pako';
 
 
@@ -10,7 +10,7 @@ const COLOR_RED = '\x1b[31m';
 const COLOR_GREEN = '\x1b[32m';
 const COLOR_YELLOW = '\x1b[33m';
 const COLOR_BLUE = '\x1b[34m';
-const COLOR_MAGENTA = '\x1b[35m';
+// const COLOR_MAGENTA = '\x1b[35m';
 
 
 const COLOR_RED_BOX = '\x1b[41m\x1b[97m';
@@ -64,9 +64,10 @@ export function serve(host: string, port: number) {
         switch (ws.data.query.type) {
           case 'provider':
             console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PROVIDER New MEI data${COLOR_RESET}`);
+            const fullMei = cleanMei(message.toString());
             Object.keys(subscribedStaves).forEach(async staves => {
-              const mei = splitMei(message.toString(), staves).toString();
-              const compressed = pako.deflate(mei);
+              const meiString = splitMei(fullMei, staves).toString();
+              const compressed = pako.deflate(meiString);
               app.server!.publish(staves, compressed, false);
               // console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PUBLISHED Staves "${staves}"${COLOR_RESET}`);
             });
@@ -84,7 +85,10 @@ export function serve(host: string, port: number) {
             break;
 
           case 'client':
-            const staves = ws.data.query.staves || 'all';
+            let staves = ws.data.query.staves;
+            if (!staves || staves === 'undefined') {
+              staves = 'all';
+            }
             console.log(`[${new Date().toISOString()}] ${COLOR_YELLOW}SUBSCRIBED Staves "${staves}"${COLOR_RESET}`);
             ws.subscribe(staves);
             subscribedStaves[staves] = (subscribedStaves[staves] || 0) + 1;
@@ -114,7 +118,7 @@ export function serve(host: string, port: number) {
     .use(cors())
     .listen({ port, hostname: '0.0.0.0' });
 
-  console.log(`🎶 Server is running.`);
-  console.log(`   Connect provider to "ws://${host}:${port}/ws?type=provider"`);
-  console.log(`   Connect clients to "http://${host}:${port}/"`);
+  console.log(`🎶 FlowScore server is running.
+   Connect provider to "ws://${host}:${port}/ws?type=provider"
+   Connect clients to "http://${host}:${port}/"`);
 }

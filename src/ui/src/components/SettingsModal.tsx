@@ -16,6 +16,7 @@ function SettingsModal(props) {
       newSelectedStaves = newSelectedStaves.filter(num => num !== i);
     }
 
+    newSelectedStaves.sort((a, b) => a - b);
     setSettings({...currentSettings, selectedStaves: newSelectedStaves});
   }
 

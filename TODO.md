@@ -7,5 +7,7 @@
 - [x] Display instrument labels in first rendered system
 - [x] Show settings page
 - [x] Save settings as Cookies
-- [ ] Colorize bottommost system (see settings)
+- [ ] Colorize bottommost system
 - [ ] Smart Scrolling
+- [ ] Show no brace if only a single staff is selected
+- [ ] Scroll on screen tap (left/right + up/down)

@@ -14,7 +14,8 @@ const SettingsContext = createContext<UserSettings>();
 
 export const SettingsProvider: Component<{ children: any }> = (props) => {
   const searchParams = new URLSearchParams(window.location.search);
-  const stavesFromUrl = searchParams.get('staves')?.split(',').map(Number);
+  const stavesString = searchParams.get('staves');
+  const stavesFromUrl = stavesString ? stavesString.split(',').map(Number) : [];
 
   const [selectedStaves, setSelectedStaves] = createSignal<number[]>(
     stavesFromUrl || JSON.parse(Cookies.get('selectedStaves') || "[]")

@@ -11,7 +11,7 @@ import {useSettings} from "./contexts/SettingsContext.tsx";
 function App() {
   const [settings] = useSettings();
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
-  const [showSettings, setShowSettings] = createSignal(true);
+  const [showSettings, setShowSettings] = createSignal(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
 
 
@@ -20,7 +20,7 @@ function App() {
   let virtualScroller: VirtualScroller<string>;
 
   function renderSvgString(svgString: string): HTMLElement {
-    return (<div class={`viewer-system max-h-screen transition-all duration-1000 ${settings().showDivider ? "border-b-4 border-b-blue-100" : ""}`} innerHTML={svgString}></div>) as HTMLElement
+    return (<div class="viewer-system max-h-screen transition-all duration-1000 bg-white mb-1" innerHTML={svgString}></div>) as HTMLElement
   }
 
   onMount(() => {
@@ -46,7 +46,7 @@ function App() {
       </Show>
 
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">
-        <div ref={viewerRef!}/>
+        <div class={settings().showDivider ? "bg-blue-100" : ""} ref={viewerRef!}/>
       </div>
 
       <Show when={!isWebSocketConnected()}>

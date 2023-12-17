@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@zakj/no-sleep": "^0.13.5",
     "js-cookie": "^3.0.5",
     "pako": "^2.1.0",
     "robust-websocket": "^1.0.0",

@@ -1,5 +1,7 @@
 import {createSignal, onMount, Show} from 'solid-js';
 import VirtualScroller from 'virtual-scroller/dom';
+import NoSleep from '@zakj/no-sleep';
+
 import SettingsModal from "./components/SettingsModal.tsx";
 import {useScrollHandler} from "./hooks/useScrollHandler.ts";
 import {useScoreProvider} from "./hooks/useScoreProvider.ts";
@@ -25,12 +27,20 @@ function App() {
     useScrollHandler(containerRef);
   });
 
+  async function handleCloseSettingsModal() {
+    setShowSettings(false);
+    try {
+      const noSleep = new NoSleep();
+      noSleep.enable();
+    } catch (err: any) {
+      console.log(`${err.name}, ${err.message}`);
+    }
+  }
+
   return (
     <>
       <Show when={showSettings()}>
-        <SettingsModal onClose={() => {
-          setShowSettings(false)
-        }}/>
+        <SettingsModal onClose={handleCloseSettingsModal}/>
       </Show>
 
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">

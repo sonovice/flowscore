@@ -1,10 +1,12 @@
-import {createEffect, For} from "solid-js";
+import {createEffect, createSignal, For} from "solid-js";
 import ToggleSlider from "./ToggleSlider.tsx";
 import ToggleButton from "./ToggleButton.tsx";
 import {useSettings} from '../contexts/SettingsContext.tsx';
 
 function SettingsModal(props) {
   const [settings, setSettings] = useSettings();
+  const [scaleValue, setScaleValue] = createSignal(settings().scoreScale);
+  const [scrollValue, setScrollValue] = createSignal(settings().scrollPercentage);
 
   function handleStaffToggle(i: number, isToggled: boolean) {
     const currentSettings = settings();
@@ -39,7 +41,7 @@ function SettingsModal(props) {
   return (
     <>
       <div class="ease-in-out duration-300 relative z-10" role="dialog">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" ></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
@@ -79,9 +81,9 @@ function SettingsModal(props) {
                         <p class="text-sm text-gray-500">
                           Selects the size of the displayed score.
                         </p>
-                        <div class="flex flew-row mt-1 items-center">
-                          <input type="range" min="30" max="100" step="1" class="w-full accent-blue-500" value={settings().scoreScale} onChange={handleScoreScaleChange}/>
-                          <div class="ml-3 text-gray-900 text-sm">{settings().scoreScale}</div>
+                        <div class="flex flew-row mt-1 items-center w-full">
+                          <input type="range" min="30" max="100" step="1" value={scaleValue()} onInput={(e) => setScaleValue(parseInt(e.target.value, 10))} onChange={handleScoreScaleChange} class="w-full accent-blue-500"/>
+                          <div class="w-7 ml-3 text-gray-900 text-sm text-right">{scaleValue()}</div>
                         </div>
 
                         <div class="mt-6 flex flew-row">
@@ -114,9 +116,9 @@ function SettingsModal(props) {
                         <p class={`text-sm ${settings().smartScroll ? "text-gray-400" : "text-gray-500"}`}>
                           Selects the scroll size as a percentage of the screen height when "turning pages".
                         </p>
-                        <div class="flex flew-row mt-1 items-center">
-                          <input type="range" min="30" max="100" step="1" disabled={settings().smartScroll} value={settings().scrollPercentage} onInput={handleScrollSizeChange} class="w-full accent-blue-500"/>
-                          <div class={`ml-3 text-sm ${settings().smartScroll ? "text-gray-400" : "text-gray-900"}`}>{settings().scrollPercentage}%</div>
+                        <div class="flex flew-row mt-1 items-center w-full">
+                          <input type="range" min="5" max="100" step="1" disabled={settings().smartScroll} value={scrollValue()} onInput={(e) => setScrollValue(parseInt(e.target.value, 10))} onChange={handleScrollSizeChange} class="w-full accent-blue-500"/>
+                          <div class={`w-10 ml-3 text-sm text-right ${settings().smartScroll ? "text-gray-400" : "text-gray-900"}`}>{scrollValue()}%</div>
                         </div>
                       </form>
                     </div>

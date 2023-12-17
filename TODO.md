@@ -9,5 +9,9 @@
 - [x] Save settings as Cookies
 - [ ] Colorize bottommost system
 - [ ] Smart Scrolling
-- [ ] Show no brace if only a single staff is selected
+- [ ] Show no brace if only a single staff is selected (Server side)
 - [ ] Scroll on screen tap (left/right + up/down)
+
+# Bugs
+- [x] Sliding range sliders in settings should change written numbers immediately
+- [ ] Only clear scores if other staves are selected

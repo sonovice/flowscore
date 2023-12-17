@@ -9,7 +9,8 @@ export function useScoreProvider(
   svgStrings: Accessor<string[]>,
   setSvgStrings: Setter<string[]>,
   containerRef: HTMLElement,
-  virtualScroller: VirtualScroller<string, undefined>
+  virtualScroller: VirtualScroller<string, undefined>,
+  setIsWebSocketConnected: Setter<boolean>
 ) {
   const [settings] = useSettings();
   const vrvWorker = new Worker(
@@ -20,6 +21,7 @@ export function useScoreProvider(
   );
   let ws: WebSocket | null = null;
   let previousStaves: string = settings().selectedStaves.join(',');
+
 
   connectWebSocket();
 
@@ -33,6 +35,7 @@ export function useScoreProvider(
     ws = new WebSocket(wsUrl);
 
     ws.onopen = (event) => {
+      setIsWebSocketConnected(true);
       console.log('WebSocket connection opened:', event);
     };
 
@@ -49,6 +52,7 @@ export function useScoreProvider(
     };
 
     ws.onclose = () => {
+      setIsWebSocketConnected(false);
       console.log('WebSocket connection closed, attempting to reconnect...');
       setTimeout(() => connectWebSocket(), 250);
     };

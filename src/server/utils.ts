@@ -87,6 +87,13 @@ export function splitMei(meiString: string, staves: string): Document {
     }
   });
 
+  // Remove @symbol in <staffGrp> if only a single staff is requested
+  if (stavesSplitted.length === 1) {
+    (select(`//*[local-name()="staffGrp"]`, mei) as Node[]).forEach(staffGrp => {
+      (staffGrp as Element).removeAttribute('symbol');
+    });
+  }
+
   // Remove all undesired <staff> elements
   (select(`//*[local-name()="staff"]`, mei) as Node[]).forEach(staff => {
     const n = (staff as Element).getAttribute('n');

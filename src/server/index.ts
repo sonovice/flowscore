@@ -1,8 +1,9 @@
 import { cors } from '@elysiajs/cors';
 import { Elysia } from "elysia";
 import getStaticFile from '../ui/dist-static';
-import {cleanMei, compareStaffNums, splitMei} from "./utils";
+import {compareNumbers} from "./utils";
 import pako from 'pako';
+import {cleanMei, splitMei} from "./meiHelpers.ts";
 
 
 const COLOR_RESET = '\x1b[0m';
@@ -29,7 +30,7 @@ export function serve(host: string, port: number) {
       const totalCount = Object.values(subscribedStaves).reduce((a, b) => a + b, 0);
       response += `Connected clients (${totalCount})\n`;
       response += "=================\n";
-      const sortedStaffNums = Object.keys(subscribedStaves).sort(compareStaffNums);
+      const sortedStaffNums = Object.keys(subscribedStaves).sort(compareNumbers);
       sortedStaffNums.forEach(staffNum => {
         const count = subscribedStaves[staffNum];
         const bar = '█'.repeat(count);

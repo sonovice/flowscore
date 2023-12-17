@@ -10,7 +10,6 @@ import {useSettings} from "./contexts/SettingsContext.tsx";
 
 function App() {
   const {showSeparator: [showSeparator]} = useSettings();
-
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
   const [showSettings, setShowSettings] = createSignal(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);

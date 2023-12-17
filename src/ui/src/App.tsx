@@ -3,16 +3,22 @@ import VirtualScroller from 'virtual-scroller/dom';
 import NoSleep from '@zakj/no-sleep';
 
 import SettingsModal from "./components/SettingsModal.tsx";
+import {useHighlighting} from './hooks/useHighlighting';
 import {useScrollHandler} from "./hooks/useScrollHandler.ts";
 import {useScoreProvider} from "./hooks/useScoreProvider.ts";
 import {useSettings} from "./contexts/SettingsContext.tsx";
 
 
 function App() {
-  const {showSeparator: [showSeparator]} = useSettings();
+  const {
+    showSeparator: [showSeparator],
+    colorizeBottomSystem: [colorizeBottomSystem]
+  } = useSettings();
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
   const [showSettings, setShowSettings] = createSignal(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
+  const [isScrolling, setIsScrolling] = createSignal(false);
+
 
 
   let containerRef: HTMLDivElement;
@@ -20,13 +26,14 @@ function App() {
   let virtualScroller: VirtualScroller<string>;
 
   function renderSvgString(svgString: string): HTMLElement {
-    return (<div class="viewer-system max-h-screen transition-all duration-1000 bg-white mb-1" innerHTML={svgString}></div>) as HTMLElement
+    return (<div class="viewer-system max-h-screen bg-white mb-1" innerHTML={svgString}></div>) as HTMLElement
   }
 
   onMount(() => {
+    const {highlightSystem} = useHighlighting(containerRef, svgStrings, colorizeBottomSystem, isScrolling);
     virtualScroller = new VirtualScroller(viewerRef, [], renderSvgString, {scrollableContainer: containerRef});
     useScoreProvider(svgStrings, setSvgStrings, containerRef, virtualScroller, setIsWebSocketConnected);
-    useScrollHandler(containerRef);
+    useScrollHandler(containerRef, highlightSystem, setIsScrolling);
   });
 
   async function handleCloseSettingsModal() {

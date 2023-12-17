@@ -9,7 +9,8 @@ import {useSettings} from "./contexts/SettingsContext.tsx";
 
 
 function App() {
-  const [settings] = useSettings();
+  const {showSeparator: [showSeparator]} = useSettings();
+
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
   const [showSettings, setShowSettings] = createSignal(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
@@ -46,7 +47,7 @@ function App() {
       </Show>
 
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">
-        <div class={settings().showDivider ? "bg-blue-100" : ""} ref={viewerRef!}/>
+        <div class={showSeparator() ? "bg-blue-100" : ""} ref={viewerRef!}/>
       </div>
 
       <Show when={!isWebSocketConnected()}>

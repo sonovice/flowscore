@@ -1,16 +1,23 @@
-import {createEffect, createSignal, For} from "solid-js";
+import {createSignal, For} from "solid-js";
 import ToggleSlider from "./ToggleSlider.tsx";
 import ToggleButton from "./ToggleButton.tsx";
 import {useSettings} from '../contexts/SettingsContext.tsx';
 
 function SettingsModal(props) {
-  const [settings, setSettings] = useSettings();
-  const [scaleValue, setScaleValue] = createSignal(settings().scoreScale);
-  const [scrollValue, setScrollValue] = createSignal(settings().scrollPercentage);
+  const {
+    selectedStaves: [selectedStaves, setSelectedStaves],
+    scoreScale: [scoreScale, setScoreScale],
+    colorizeBottomSystem: [colorizeBottomSystem, setColorizeBottomSystem],
+    smartScroll: [smartScroll, setSmartScroll],
+    scrollPercentage: [scrollPercentage, setScrollPercentage],
+    showSeparator: [showSeparator, setShowSeparator]
+  } = useSettings();
+
+  const [scaleValue, setScaleValue] = createSignal(scoreScale());
+  const [scrollValue, setScrollValue] = createSignal(scrollPercentage());
 
   function handleStaffToggle(i: number, isToggled: boolean) {
-    const currentSettings = settings();
-    let newSelectedStaves = [...currentSettings.selectedStaves];
+    let newSelectedStaves = [...selectedStaves()];
 
     if (isToggled) {
       newSelectedStaves.push(i);
@@ -19,24 +26,28 @@ function SettingsModal(props) {
     }
 
     newSelectedStaves.sort((a, b) => a - b);
-    setSettings({...currentSettings, selectedStaves: newSelectedStaves});
+    setSelectedStaves(newSelectedStaves);
   }
 
   function handleScoreScaleChange(e) {
-    setSettings({...settings(), scoreScale: parseInt(e.target.value, 10)});
+    setScoreScale(parseInt(e.target.value, 10));
   }
 
-  function handleToggleOptionChange(optionName, value) {
-    setSettings({...settings(), [optionName]: value});
+  function handleShowSeparatorChange(isToggled: boolean) {
+    setShowSeparator(isToggled);
+  }
+
+  function handleColorizeBottomSystemChange(isToggled: boolean) {
+    setColorizeBottomSystem(isToggled);
+  }
+
+  function handleSmartScrollChange(isToggled: boolean) {
+    setSmartScroll(isToggled);
   }
 
   function handleScrollSizeChange(e) {
-    setSettings({...settings(), scrollPercentage: parseInt(e.target.value, 10)});
+    setScrollPercentage(parseInt(e.target.value, 10));
   }
-
-  createEffect(() => {
-    console.log(settings());
-  })
 
   return (
     <>
@@ -68,7 +79,7 @@ function SettingsModal(props) {
                         <div class="mt-2 grid grid-cols-5 sm:grid-cols-10 gap-2">
                           <For each={[...Array(30).keys()]}>{(i) =>
                             <ToggleButton
-                              isToggled={settings().selectedStaves.includes(i + 1)}
+                              isToggled={selectedStaves().includes(i + 1)}
                               onToggle={(isToggled: boolean) => handleStaffToggle(i + 1, isToggled)}>
                               {i + 1}
                             </ToggleButton>
@@ -83,19 +94,19 @@ function SettingsModal(props) {
                         </p>
                         <div class="flex flew-row mt-1 items-center w-full">
                           <input type="range" min="30" max="100" step="1" value={scaleValue()} onInput={(e) => setScaleValue(parseInt(e.target.value, 10))} onChange={handleScoreScaleChange} class="w-full accent-blue-500"/>
-                          <div class="w-7 ml-3 text-gray-900 text-sm text-right">{scaleValue()}</div>
+                          <div class="w-6 ml-3 text-gray-900 text-sm text-right">{scaleValue()}</div>
                         </div>
 
                         <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={settings().showDivider} onToggle={(isToggled: boolean) => handleToggleOptionChange('showDivider', isToggled)}/>
-                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Show divider between staves</label>
+                          <ToggleSlider isToggled={showSeparator()} onToggle={handleShowSeparatorChange}/>
+                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Show separator between staves</label>
                         </div>
                         <p class="text-sm text-gray-500">
-                          If activated, a small gray line is displayed between systems to make it easier to distinguish between them.
+                          If activated, a small line is displayed between systems to make it easier to distinguish between them.
                         </p>
 
                         <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={settings().colorizeBottomSystem} onToggle={(isToggled: boolean) => handleToggleOptionChange('colorizeBottomSystem', isToggled)}/>
+                          <ToggleSlider isToggled={colorizeBottomSystem()} onToggle={handleColorizeBottomSystemChange}/>
                           <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Colorize bottom system</label>
                         </div>
                         <p class="text-sm text-gray-500">
@@ -103,7 +114,7 @@ function SettingsModal(props) {
                         </p>
 
                         <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={settings().smartScroll} onToggle={(isToggled: boolean) => handleToggleOptionChange('smartScroll', isToggled)}/>
+                          <ToggleSlider isToggled={smartScroll()} onToggle={handleSmartScrollChange}/>
                           <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Smart scrolling</label>
                         </div>
                         <p class="text-sm text-gray-500">
@@ -111,14 +122,14 @@ function SettingsModal(props) {
                         </p>
 
                         <div class="mt-6 flex flew-row">
-                          <label class={`block text-sm font-medium leading-6 ${settings().smartScroll ? "text-gray-400" : "text-gray-900"}`}>Scroll size</label>
+                          <label class={`block text-sm font-medium leading-6 ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>Scroll size</label>
                         </div>
-                        <p class={`text-sm ${settings().smartScroll ? "text-gray-400" : "text-gray-500"}`}>
+                        <p class={`text-sm ${smartScroll() ? "text-gray-400" : "text-gray-500"}`}>
                           Selects the scroll size as a percentage of the screen height when "turning pages".
                         </p>
                         <div class="flex flew-row mt-1 items-center w-full">
-                          <input type="range" min="5" max="100" step="1" disabled={settings().smartScroll} value={scrollValue()} onInput={(e) => setScrollValue(parseInt(e.target.value, 10))} onChange={handleScrollSizeChange} class="w-full accent-blue-500"/>
-                          <div class={`w-10 ml-3 text-sm text-right ${settings().smartScroll ? "text-gray-400" : "text-gray-900"}`}>{scrollValue()}%</div>
+                          <input type="range" min="5" max="100" step="1" disabled={smartScroll()} value={scrollValue()} onInput={(e) => setScrollValue(parseInt(e.target.value, 10))} onChange={handleScrollSizeChange} class="w-full accent-blue-500"/>
+                          <div class={`w-10 ml-3 text-sm text-right ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>{scrollValue()}%</div>
                         </div>
                       </form>
                     </div>

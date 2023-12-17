@@ -14,4 +14,4 @@
 
 # Bugs
 - [x] Sliding range sliders in settings should change written numbers immediately
-- [ ] Only clear scores if other staves are selected
+- [x] Only clear scores if other staves are selected

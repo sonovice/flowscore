@@ -2,7 +2,10 @@ import {onMount} from 'solid-js';
 import {useSettings} from '../contexts/SettingsContext.tsx';
 
 export function useScrollHandler(containerRef) {
-  const [settings] = useSettings();
+  const {
+    smartScroll: [smartScroll],
+    scrollPercentage: [scrollPercentage]
+  } = useSettings();
 
   const handleKeydown = (e) => {
     const systems: Element[] = containerRef.getElementsByClassName("viewer-system");
@@ -16,7 +19,7 @@ export function useScrollHandler(containerRef) {
       case 'ArrowUp':
       case ' ':
         e.preventDefault();
-        containerRef.scrollTo({top: containerRef.scrollTop - (screenHeight * settings()!.scrollPercentage / 100), behavior: 'smooth'});
+        containerRef.scrollTo({top: containerRef.scrollTop - (screenHeight * scrollPercentage() / 100), behavior: 'smooth'});
         break;
 
       // Scroll backward
@@ -25,7 +28,7 @@ export function useScrollHandler(containerRef) {
       case 'ArrowDown':
       case 'Enter':
         e.preventDefault();
-        if (settings()!.smartScroll) {
+        if (smartScroll()) {
           for (let i = 0; i < boundingRects.length; i++) {
             if (boundingRects[i].bottom > screenHeight) {
               const targetSystem = systems[i] as HTMLDivElement;
@@ -39,7 +42,7 @@ export function useScrollHandler(containerRef) {
             }
           }
         } else {
-          containerRef.scrollTo({top: containerRef.scrollTop + (screenHeight * settings()!.scrollPercentage / 100), behavior: 'smooth'});
+          containerRef.scrollTo({top: containerRef.scrollTop + (screenHeight * scrollPercentage() / 100), behavior: 'smooth'});
         }
         break;
     }

@@ -12,7 +12,11 @@ export function useScoreProvider(
   virtualScroller: VirtualScroller<string, undefined>,
   setIsWebSocketConnected: Setter<boolean>
 ) {
-  const [settings] = useSettings();
+  const {
+    selectedStaves: [selectedStaves],
+    scoreScale: [scoreScale]
+  } = useSettings();
+
   const vrvWorker = new Worker(
     new URL('../workers/verovioWorker.ts', import.meta.url),
     {
@@ -20,17 +24,17 @@ export function useScoreProvider(
     }
   );
   let ws: WebSocket | null = null;
-  let previousStaves: string = settings().selectedStaves.join(',');
+  let previousStaves: string = selectedStaves().join(',');
 
 
   connectWebSocket();
 
 
   function connectWebSocket() {
-    const selectedStaves = settings().selectedStaves.join(',');
+    const selectedStavesString = selectedStaves().join(',');
     const hostname = window.location.hostname;
     const port = hostname === 'localhost' ? '8765' : window.location.port;
-    const wsUrl = `ws://${hostname}:${port}/ws?type=client&staves=${selectedStaves}`;
+    const wsUrl = `ws://${hostname}:${port}/ws?type=client&staves=${selectedStavesString}`;
 
     ws = new WebSocket(wsUrl);
 
@@ -44,7 +48,7 @@ export function useScoreProvider(
       reader.onload = (e) => {
         if (e.target !== null) {
           let mei = pako.inflate(e.target.result as Data, {to: "string"});
-          mei = modifyLabels(mei, svgStrings().length, selectedStaves === 'all');
+          mei = modifyLabels(mei, svgStrings().length, selectedStavesString === 'all');
           vrvWorker.postMessage({cmd: 'loadData', param: mei});
         }
       };
@@ -59,7 +63,7 @@ export function useScoreProvider(
   }
 
   function renderScore() {
-    const scale = settings().scoreScale;
+    const scale = scoreScale();
     const width = containerRef.clientWidth;
     const height = containerRef.clientHeight;
     const margin = 16 * 100 / scale;
@@ -103,15 +107,13 @@ export function useScoreProvider(
   })
 
   createEffect(() => {
-    settings();
-
     // Reset score if settings have been changed
     setSvgStrings([]);
 
     // Reconnect WebSocket if staff selection changed
-    const selectedStaves = settings().selectedStaves.join(',');
-    if (selectedStaves !== previousStaves && ws) {
-      previousStaves = selectedStaves;
+    const selectedStavesString = selectedStaves().join(',');
+    if (selectedStavesString !== previousStaves && ws) {
+      previousStaves = selectedStavesString;
       ws.onclose = null;
       ws.close();
       connectWebSocket();

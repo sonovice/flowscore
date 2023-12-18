@@ -1,8 +1,10 @@
 # FlowScore
 Streaming-Based Score Viewer App
 
+
 ## TL;DR
 FlowScore is a web-based score viewer app that enables real-time reception, rendering, and display of musical material on digital music stands.
+![Screenshot](.github/screenshot.png)
 
 ## Concept
 This project aims to provide a streaming-based solution, divided into three main components: Provider, Server, and Client:

@@ -1,15 +1,23 @@
-# server
+# FlowScore
+Streaming-Based Score Viewer App
 
-To install dependencies:
+## TL;DR
+FlowScore is a web-based score viewer app that enables real-time reception, rendering, and display of musical material on digital music stands.
 
-```bash
-bun install
-```
+## Concept
+This project aims to provide a streaming-based solution, divided into three main components: Provider, Server, and Client:
 
-To run:
+- Provider: Sends musical material to the host. This part is developed externally. (A naive provider that streams MEI files can be found in the /tests folder.)
+- Server: Receives musical material from the Music Provider, generates voice parts, and sends them to the clients.
+- Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
-```bash
-bun run index.ts
-```
+## Notes for Providers
+- WebSocket Connection: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
 
-This project was created using `bun init` in bun v1.0.11. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+- Responsibility for Reconnects: As a provider, you are responsible for maintaining your connection. If the connection to the WebSocket server is interrupted for any reason, you must ensure that your provider can automatically reconnect. Therefore, implement a reliable reconnect logic to ensure the stability and reliability of your services.
+
+- Data Format: Ensure that all MEI data you submit is valid.
+
+- Inclusion of Labels: When transmitting MEI data, it is important to include the `@label` and `@label.abbr` attributes in `<scoreDef>` elements **for each MEI snippet**.
+
+- Ignoring MEI header: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.

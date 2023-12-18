@@ -40,6 +40,8 @@ FlowScore server v0.1.0 with UI v0.1.0
 
 
 ## Build instructions
+⚠️  Only macOS, Linux and WSL are supported for now.
+
 1. Make sure to have `bun` installed:
 ```
 $ curl -fsSL https://bun.sh/install | bash

@@ -1,7 +1,11 @@
-import {onMount} from 'solid-js';
+import {onMount, Setter} from 'solid-js';
 import {useSettings} from '../contexts/SettingsContext.tsx';
 
-export function useScrollHandler(containerRef, highlightSystem, setIsScrolling) {
+export function useInputHandler(
+  containerRef: HTMLDivElement,
+  highlightSystem: () => void,
+  setIsScrolling: Setter<boolean>
+) {
   const {
     smartScroll: [smartScroll],
     scrollPercentage: [scrollPercentage],
@@ -13,6 +17,27 @@ export function useScrollHandler(containerRef, highlightSystem, setIsScrolling) 
   let scrollTimeout;
 
   containerRef.onscroll = handleScroll;
+  containerRef.onclick = handleClick;
+
+  function isInArea(x, y, area) {
+    return x >= area.x && x <= area.x + area.width && y >= area.y && y <= area.y + area.height;
+  }
+
+  function handleClick(e: MouseEvent) {
+    const {clientX, clientY} = e instanceof TouchEvent ? e.touches[0] : e;
+    const {width, height} = containerRef.getBoundingClientRect();
+
+    const areaRight = { x: width * 2 / 3, y: 0, width: width / 3, height };
+    const areaLeft = { x: 0, y: 0, width: width / 3, height };
+    const areaBottom = { x: 0, y: height * 2 / 3, width, height: height / 3 };
+    const areaTop = { x: 0, y: 0, width, height: height / 3 };
+
+    if (isInArea(clientX, clientY, areaRight) || isInArea(clientX, clientY, areaBottom)) {
+      scrollForward();
+    } else if (isInArea(clientX, clientY, areaLeft) || isInArea(clientX, clientY, areaTop)) {
+      scrollBackward();
+    }
+  }
 
   function handleScroll() {
     setIsScrolling(true);
@@ -30,10 +55,10 @@ export function useScrollHandler(containerRef, highlightSystem, setIsScrolling) 
   }
 
   function handleScrollEnd() {
+    setIsScrolling(false);
     if (colorizeBottomSystem()) {
       highlightSystem();
     }
-    setIsScrolling(false);
   }
 
   function scrollBackward() {

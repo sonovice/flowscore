@@ -13,7 +13,8 @@ export function useHighlighting(containerRef, svgStrings, colorizeBottomSystem, 
         const targetSystem = systems[i] as HTMLDivElement;
         targetSystem.style.backgroundColor = '#EFF6FF'; //'#DBEAFE';
         if (!isScrolling() && highlightedSystem && targetSystem != highlightedSystem) {
-          highlightedSystem.style.backgroundColor = '#FFFFFF';
+          const prevHighlightedSystem = highlightedSystem; // Copy reference
+          setTimeout(() => {prevHighlightedSystem.style.backgroundColor = '#FFFFFF'}, 1000);
         }
         highlightedSystem = targetSystem;
         break;

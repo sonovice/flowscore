@@ -2,11 +2,12 @@ import {createSignal, onMount, Show} from 'solid-js';
 import VirtualScroller from 'virtual-scroller/dom';
 import NoSleep from '@zakj/no-sleep';
 
-import SettingsModal from "./components/SettingsModal.tsx";
 import {useHighlighting} from './hooks/useHighlighting';
-import {useScrollHandler} from "./hooks/useScrollHandler.ts";
+import {useInputHandler} from "./hooks/useInputHandler.ts";
 import {useScoreProvider} from "./hooks/useScoreProvider.ts";
 import {useSettings} from "./contexts/SettingsContext.tsx";
+
+import SettingsModal from "./components/SettingsModal.tsx";
 
 
 function App() {
@@ -18,7 +19,6 @@ function App() {
   const [showSettings, setShowSettings] = createSignal(false);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
   const [isScrolling, setIsScrolling] = createSignal(false);
-
 
 
   let containerRef: HTMLDivElement;
@@ -33,7 +33,7 @@ function App() {
     const {highlightSystem} = useHighlighting(containerRef, svgStrings, colorizeBottomSystem, isScrolling);
     virtualScroller = new VirtualScroller(viewerRef, [], renderSvgString, {scrollableContainer: containerRef});
     useScoreProvider(svgStrings, setSvgStrings, containerRef, virtualScroller, setIsWebSocketConnected);
-    useScrollHandler(containerRef, highlightSystem, setIsScrolling);
+    useInputHandler(containerRef, highlightSystem, setIsScrolling);
   });
 
   async function handleCloseSettingsModal() {

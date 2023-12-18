@@ -16,7 +16,7 @@ function App() {
     colorizeBottomSystem: [colorizeBottomSystem]
   } = useSettings();
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
-  const [showSettings, setShowSettings] = createSignal(false);
+  const [showSettings, setShowSettings] = createSignal(true);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
   const [isScrolling, setIsScrolling] = createSignal(false);
 
@@ -70,7 +70,7 @@ function App() {
       </button>
 
       <div class="fixed top-1 right-1">
-        {svgStrings().length}
+        {/*{svgStrings().length}*/}
       </div>
     </>
   )

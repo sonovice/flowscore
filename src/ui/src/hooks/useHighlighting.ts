@@ -12,7 +12,7 @@ export function useHighlighting(containerRef, svgStrings, colorizeBottomSystem, 
       if (boundingRects[i].bottom >= screenHeight) {
         const targetSystem = systems[i] as HTMLDivElement;
         targetSystem.style.backgroundColor = '#EFF6FF'; //'#DBEAFE';
-        if (highlightedSystem && targetSystem != highlightedSystem) {
+        if (!isScrolling() && highlightedSystem && targetSystem != highlightedSystem) {
           highlightedSystem.style.backgroundColor = '#FFFFFF';
         }
         highlightedSystem = targetSystem;

@@ -1,9 +1,11 @@
-import { cors } from '@elysiajs/cors';
-import { Elysia } from "elysia";
-import getStaticFile from '../ui/dist-static';
-import {compareNumbers} from "./utils";
+import {cors} from '@elysiajs/cors';
+import {Elysia} from "elysia";
 import pako from 'pako';
+import minifyXML from "minify-xml";
+
+import getStaticFile from '../ui/dist-static';
 import {cleanMei, splitMei} from "./meiHelpers.ts";
+import {compareNumbers} from "./utils";
 
 
 const COLOR_RESET = '\x1b[0m';
@@ -68,7 +70,7 @@ export function serve(host: string, port: number) {
             const fullMei = cleanMei(message.toString());
             Object.keys(subscribedStaves).forEach(async staves => {
               const meiString = splitMei(fullMei, staves).toString();
-              const compressed = pako.deflate(meiString);
+              const compressed = pako.deflate(minifyXML(meiString));
               app.server!.publish(staves, compressed, false);
               // console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PUBLISHED Staves "${staves}"${COLOR_RESET}`);
             });

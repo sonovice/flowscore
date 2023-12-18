@@ -24,6 +24,7 @@
   "dependencies": {
     "@elysiajs/cors": "^0.7.2",
     "elysia": "^0.7.30",
+    "minify-xml": "^4.3.0",
     "pako": "^2.1.0",
     "xmldom": "^0.6.0",
     "xpath": "^0.0.34"

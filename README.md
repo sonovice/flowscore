@@ -1,13 +1,9 @@
 # FlowScore
-Streaming-Based Score Viewer App
-
-
-## TL;DR
 FlowScore is a web-based score viewer app that enables real-time reception, rendering, and display of musical material on digital music stands.
 ![Screenshot](.github/screenshot.png)
 
 
-## Concept
+## 💡 Concept
 This project aims to provide a streaming-based solution, divided into three main components: Provider, Server, and Client:
 
 - Provider: Sends musical material to the host. This part is developed externally. (A naive provider that streams MEI files can be found in the /tests folder.)
@@ -15,7 +11,7 @@ This project aims to provide a streaming-based solution, divided into three main
 - Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
 
-## Notes for Providers
+## 📋 Notes for Providers
 - WebSocket Connection: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
 
 - Responsibility for Reconnects: As a provider, you are responsible for maintaining your connection. If the connection to the WebSocket server is interrupted for any reason, you must ensure that your provider can automatically reconnect. Therefore, implement a reliable reconnect logic to ensure the stability and reliability of your services.
@@ -27,8 +23,21 @@ This project aims to provide a streaming-based solution, divided into three main
 - Ignoring MEI header: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.
 
 
-## Options
-For now the options are restricted to selecting a custom port:
+## 🏎 Build instructions
+Only macOS, Linux and WSL are supported for now. ⚠️
+
+1. Make sure to have `bun` installed:
+```
+$ curl -fsSL https://bun.sh/install | bash
+```
+2. Run `bun run build` in the root directory of the repo.
+3. The resulting executable binary is called `FlowScoreApp`.
+
+
+## 🛠️️ Run server
+To run the server, simply execute the previously built `FlowScoreApp`.
+
+For now the CLI options are restricted to selecting a custom port:
 ```
 $ ./FlowScoreApp --help
 FlowScore server v0.1.0 with UI v0.1.0
@@ -38,13 +47,4 @@ FlowScore server v0.1.0 with UI v0.1.0
      --help      Show this help menu.
 ```
 
-
-## Build instructions
-⚠️  Only macOS, Linux and WSL are supported for now.
-
-1. Make sure to have `bun` installed:
-```
-$ curl -fsSL https://bun.sh/install | bash
-```
-2. Run `bun run build` in the root directory of the repo.
-3. The resulting executable binary is called `FlowScoreApp`.
+Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168.1.1:8765/`.

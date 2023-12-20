@@ -39,7 +39,7 @@ FlowScore server v0.1.0 with UI v0.1.0
 Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168.1.1:8765/`.
 
 ## 📋 Notes for Providers
-- **WebSocket Connection**: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
+- **WebSocket Connection**: Connect to the Server at `ws://[IP]:[Port]/ws?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
 
 - **Responsibility for Reconnects**: As a provider, you are responsible for maintaining your connection. If the connection to the WebSocket server is interrupted for any reason, you must ensure that your provider can automatically reconnect. Therefore, implement a reliable reconnect logic to ensure the stability and reliability of your services.
 

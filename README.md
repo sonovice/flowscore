@@ -11,18 +11,6 @@ This project aims to provide a streaming-based solution, divided into three main
 - Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
 
-## 📋 Notes for Providers
-- WebSocket Connection: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
-
-- Responsibility for Reconnects: As a provider, you are responsible for maintaining your connection. If the connection to the WebSocket server is interrupted for any reason, you must ensure that your provider can automatically reconnect. Therefore, implement a reliable reconnect logic to ensure the stability and reliability of your services.
-
-- Data Format: Ensure that all MEI data you submit is valid.
-
-- Inclusion of Labels: When transmitting MEI data, it is important to include the `@label` and `@label.abbr` attributes in `<scoreDef>` elements **for each MEI snippet**.
-
-- Ignoring MEI header: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.
-
-
 ## 🏎 Build instructions
 Only macOS, Linux and WSL are supported for now. ⚠️
 
@@ -48,3 +36,17 @@ FlowScore server v0.1.0 with UI v0.1.0
 ```
 
 Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168.1.1:8765/`.
+
+## Usage
+
+
+## 📋 Notes for Providers
+- WebSocket Connection: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
+
+- Responsibility for Reconnects: As a provider, you are responsible for maintaining your connection. If the connection to the WebSocket server is interrupted for any reason, you must ensure that your provider can automatically reconnect. Therefore, implement a reliable reconnect logic to ensure the stability and reliability of your services.
+
+- Data Format: Ensure that all MEI data you submit is valid.
+
+- Inclusion of Labels: When transmitting MEI data, it is important to include the `@label` and `@label.abbr` attributes in `<scoreDef>` elements **for each MEI snippet**.
+- 
+- Ignoring MEI header: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.

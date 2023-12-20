@@ -37,9 +37,6 @@ FlowScore server v0.1.0 with UI v0.1.0
 
 Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168.1.1:8765/`.
 
-## Usage
-
-
 ## 📋 Notes for Providers
 - WebSocket Connection: Connect to the Server at `ws://[IP]:[Port]?type=provider` using the WebSocket protocol. This connection is used for exchanging data between your provider and the main system.
 

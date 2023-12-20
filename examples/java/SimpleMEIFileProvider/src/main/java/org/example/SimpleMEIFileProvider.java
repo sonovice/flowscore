@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 
 public class SimpleMEIFileProvider extends WebSocketClient {
     private static final long RECONNECT_INTERVAL = 250;
+    private boolean shouldReconnect = true;
 
     public SimpleMEIFileProvider(URI serverUri) {
         super(serverUri);
@@ -38,16 +39,25 @@ public class SimpleMEIFileProvider extends WebSocketClient {
         this.reconnect();
     }
 
+    public void closeBlocking(boolean preventReconnect) throws InterruptedException {
+        if (preventReconnect) {
+            this.shouldReconnect = false;
+        }
+        super.closeBlocking();
+    }
+
     @Override
     public void reconnect() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(RECONNECT_INTERVAL);
-                this.reconnectBlocking();
-            } catch (InterruptedException | IllegalStateException e) {
-                System.out.println("Reconnect failed: " + e.getMessage());
-            }
-        }).start();
+        if (this.shouldReconnect) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(RECONNECT_INTERVAL);
+                    this.reconnectBlocking();
+                } catch (InterruptedException | IllegalStateException e) {
+                    System.out.println("Reconnect failed: " + e.getMessage());
+                }
+            }).start();
+        }
     }
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException {
@@ -63,5 +73,7 @@ public class SimpleMEIFileProvider extends WebSocketClient {
         } catch (IOException e) {
             System.out.println("Failed to read file: " + e.getMessage());
         }
+
+        client.closeBlocking(true);
     }
 }

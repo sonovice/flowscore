@@ -60,20 +60,16 @@ public class SimpleMEIFileProvider extends WebSocketClient {
         }
     }
 
-    public static void main(String[] args) throws URISyntaxException, InterruptedException {
-        SimpleMEIFileProvider client = new SimpleMEIFileProvider(new URI("ws://localhost:8765/ws?type=provider"));
-        client.connectBlocking();
+    public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
+        SimpleMEIFileProvider provider = new SimpleMEIFileProvider(new URI("ws://localhost:8765/ws?type=provider"));
+        provider.connectBlocking();
 
         // Read MEI file and send it via web socket
         String filePath = "../Brahms_StringQuartet_Op51_No1.mei";
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(filePath)));
-            client.send(content);
-            System.out.println("MEI file was sent.");
-        } catch (IOException e) {
-            System.out.println("Failed to read file: " + e.getMessage());
-        }
+        String content = new String(Files.readAllBytes(Paths.get(filePath)));
+        provider.send(content);
+        System.out.println("MEI file was sent.");
 
-        client.closeBlocking(true);
+        provider.closeBlocking(true);
     }
 }

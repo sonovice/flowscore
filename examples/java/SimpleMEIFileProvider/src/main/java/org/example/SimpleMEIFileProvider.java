@@ -52,12 +52,7 @@ public class SimpleMEIFileProvider extends WebSocketClient {
 
     public static void main(String[] args) throws URISyntaxException, InterruptedException {
         SimpleMEIFileProvider client = new SimpleMEIFileProvider(new URI("ws://localhost:8765/ws?type=provider"));
-
-        // Wait for successful connection
-        client.connect();
-        while (!client.isOpen()) {
-            Thread.sleep(100);
-        }
+        client.connectBlocking();
 
         // Read MEI file and send it via web socket
         String filePath = "../../Brahms_StringQuartet_Op51_No1.mei";

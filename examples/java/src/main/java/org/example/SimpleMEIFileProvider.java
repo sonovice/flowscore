@@ -65,7 +65,7 @@ public class SimpleMEIFileProvider extends WebSocketClient {
         client.connectBlocking();
 
         // Read MEI file and send it via web socket
-        String filePath = "../../Brahms_StringQuartet_Op51_No1.mei";
+        String filePath = "../Brahms_StringQuartet_Op51_No1.mei";
         try {
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
             client.send(content);

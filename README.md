@@ -45,5 +45,5 @@ Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168
 - Data Format: Ensure that all MEI data you submit is valid.
 
 - Inclusion of Labels: When transmitting MEI data, it is important to include the `@label` and `@label.abbr` attributes in `<scoreDef>` elements **for each MEI snippet**.
-- 
+
 - Ignoring MEI header: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.

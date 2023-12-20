@@ -44,9 +44,9 @@ class Provider:
 
 
 def main(min_delay=0.5, max_delay=2):
-    # provider = Provider(mei_path="Brahms_StringQuartet_Op51_No1.mei")
+    # provider = Provider(mei_path="../Brahms_StringQuartet_Op51_No1.mei")
     print("Generating scores... ", end="", flush=True)
-    provider = Provider(mei_path="Hummel_Concerto_for_trumpet.mei")
+    provider = Provider(mei_path="../Hummel_Concerto_for_trumpet.mei")
     scores = list(provider)
     print("Done.", flush=True)
 

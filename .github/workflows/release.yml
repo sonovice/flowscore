@@ -1,0 +1,101 @@
+name: Build and Release on Version Change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.version_changed.outputs.changed }}
+      new_version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2 # Fetch the last two commits
+      - name: Check if version changed
+        id: version_changed
+        run: |
+          PREV_VERSION=$(git diff HEAD^ HEAD -- package.json | grep '"version":' | head -n 1 | awk '{ print $2 }' | tr -d '",')
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          if [ "$PREV_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
+          fi
+      - name: Get current version
+        id: get_version
+        if: steps.version_changed.outputs.changed == 'true'
+        run: echo "::set-output name=version::$(jq -r '.version' package.json)"
+
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.version_changed == 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            install_command: powershell -c "irm bun.sh/install.ps1 | iex"
+            executable: FlowScoreApp.exe
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            install_command: curl https://bun.sh/install | bash
+            executable: FlowScoreApp
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            install_command: curl https://bun.sh/install | bash
+            executable: FlowScoreApp
+          - os: macos-latest
+            platform: mac
+            arch: x64
+            install_command: curl https://bun.sh/install | bash
+            executable: FlowScoreApp
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Bun
+        run: ${{ matrix.install_command }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Run build
+        run: bun run build
+
+      - name: Rename and upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.executable }}-v${{ needs.check-version.outputs.new_version }}"
+          path: path/to/build/output/${{ matrix.executable }}
+
+  create-release:
+    needs: build-and-release
+    if: ${{ always() }} && needs.check-version.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.new_version }}
+          name: FlowScore v${{ needs.check-version.outputs.new_version }}
+          draft: false
+          prerelease: false
+          files: |
+            *.exe
+            FlowScoreApp
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

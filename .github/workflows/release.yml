@@ -69,6 +69,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           powershell -c "irm bun.sh/install.ps1 | iex"
+          echo "C:\Users\runneradmin\.bun\bin" >> $GITHUB_PATH
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -82,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.executable }}-v${{ needs.check-version.outputs.new_version }}"
-          path: path/to/build/output/${{ matrix.executable }}
+          path: src/${{ matrix.executable }}
 
   create-release:
     needs: build-and-release

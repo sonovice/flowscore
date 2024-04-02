@@ -103,11 +103,7 @@ jobs:
             if [ -d "$dir" ]; then
               base=$(basename "$dir")
               file=$(ls "$dir")
-              # Get the extension of the file
-              ext="${file##*.}"
-              # Add the extension to the base name if it exists
-                mv "$dir/$file" "/home/runner/release/${base}"
-              fi
+              mv "$dir/$file" "/home/runner/release/${base}"
             fi
           done
         shell: bash

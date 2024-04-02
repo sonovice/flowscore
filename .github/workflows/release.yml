@@ -43,18 +43,22 @@ jobs:
             platform: windows
             arch: x64
             executable: FlowScoreApp.exe
+            extension: .exe
           - os: ubuntu-latest
             platform: linux
             arch: x64
             executable: FlowScoreApp
+            extension: ""
           - os: ubuntu-latest
             platform: linux
             arch: arm64
             executable: FlowScoreApp
+            extension: ""
           - os: macos-latest
             platform: mac
             arch: x64
             executable: FlowScoreApp
+            extension: ""
     steps:
       - uses: actions/checkout@v3
 
@@ -70,12 +74,6 @@ jobs:
         run: |
           powershell -c "irm bun.sh/install.ps1 | iex"
           echo "C:\Users\runneradmin\.bun\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
-
-#      - name: Setup Node
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '16'
 
       - name: Run build
         run: bun run build
@@ -83,7 +81,7 @@ jobs:
       - name: Rename and upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.executable }}-v${{ needs.check-version.outputs.new_version }}"
+          name: "FlowScore-${{ matrix.platform }}-${{ matrix.arch }}-v${{ needs.check-version.outputs.new_version }}${{ matrix.extension }}"
           path: src/${{ matrix.executable }}
 
   create-release:
@@ -101,8 +99,6 @@ jobs:
           name: FlowScore v${{ needs.check-version.outputs.new_version }}
           draft: false
           prerelease: false
-          files: |
-            *.exe
-            FlowScoreApp
+          files: FlowScore-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

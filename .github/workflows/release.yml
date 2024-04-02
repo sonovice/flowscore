@@ -98,10 +98,11 @@ jobs:
 
       - name: Rename and move artifacts
         run: |
+          mkdir -p /home/runner/release
           for dir in ~/artifacts/*; do
             if [ -d "$dir" ]; then
               base=$(basename "$dir")
-              mv "$dir"/* "/home/runner/artifacts/${base}"
+              mv "$dir"/* "/home/runner/release/${base}"
             fi
           done
         shell: bash

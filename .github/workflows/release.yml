@@ -87,7 +87,7 @@ jobs:
           retention-days: 1
 
   create-release:
-    needs: build-and-release
+    needs: [check-version, build-and-release]
     if: ${{ always() }} && needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -106,9 +106,6 @@ jobs:
               # Get the extension of the file
               ext="${file##*.}"
               # Add the extension to the base name if it exists
-              if [[ -n "$ext" && "$file" != "$ext" ]]; then
-                mv "$dir/$file" "/home/runner/release/${base}.${ext}"
-              else
                 mv "$dir/$file" "/home/runner/release/${base}"
               fi
             fi

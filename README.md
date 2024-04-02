@@ -11,29 +11,16 @@ This project aims to provide a streaming-based solution, divided into three main
 - Server: Receives musical material from the Music Provider, generates voice parts, and sends them to the clients.
 - Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
-
-## 🏎 Build instructions
-Only macOS, Linux and WSL are supported for now. ⚠️
-
-1. Make sure to have `bun` installed:
-```
-$ curl -fsSL https://bun.sh/install | bash
-```
-2. Run `bun run build` in the root directory of the repo.
-3. The resulting executable binary is called `FlowScoreApp`.
-
-
-## 🛠️️ Run server
+## 🏎 Run server
 To run the server, simply execute the previously built `FlowScoreApp`.
 
 For now the CLI options are restricted to selecting a custom port:
 ```
-$ ./FlowScoreApp --help
-FlowScore server v0.1.0 with UI v0.1.0
+$ ./FlowScoreApp
+FlowScore server v1.0.0 with UI v1.0.0
     Usage: ./FlowScoreApp [OPTIONS]
     Options:
      --port      Set custom port number. Default is 8765.
-     --help      Show this help menu.
 ```
 
 Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168.1.1:8765/`.
@@ -50,3 +37,5 @@ Clients then have to connect to the given IP/Port via HTTP, e.g. `http://192.168
 - **Ignoring MEI header**: Note that the server ignores the `<meiHead>` part of the MEI data. This means that any information provided in this section will not be processed or considered.
 
 - **Examples**: See the `examples/` directory for provider examples in Python and Java.
+
+<sub>The development of FlowScore is supported by KreativInstitut.OWL, a consortium consisting of OWL University of Applied Sciences and Arts, Detmold University of Music, and Paderborn University, funded by the Ministry of Economic Affairs, Industry, Climate Action and Energy of the State of North Rhine-Westphalia, Germany.</sub>

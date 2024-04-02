@@ -42,34 +42,33 @@ jobs:
           - os: windows-latest
             platform: windows
             arch: x64
-            install_command: powershell -c "irm bun.sh/install.ps1 | iex"
-            post_install_command: ""
             executable: FlowScoreApp.exe
           - os: ubuntu-latest
             platform: linux
             arch: x64
-            install_command: curl https://bun.sh/install | bash
-            post_install_command: source /home/runner/.bashrc
             executable: FlowScoreApp
           - os: ubuntu-latest
             platform: linux
             arch: arm64
-            install_command: curl https://bun.sh/install | bash
-            post_install_command: source /home/runner/.bashrc
             executable: FlowScoreApp
           - os: macos-latest
             platform: mac
             arch: x64
-            install_command: curl https://bun.sh/install | bash
-            post_install_command: source /home/runner/.bashrc
             executable: FlowScoreApp
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Bun
+      - name: Install Bun on Linux/macOS
+        if: matrix.os != 'windows-latest'
         run: |
-          ${{ matrix.install_command }}
-          ${{ matrix.post_install_command }}
+          curl https://bun.sh/install | bash
+          echo "BUN_BIN=$(echo $HOME/.bun/bin)" >> $GITHUB_ENV
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Install Bun on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          powershell -c "irm bun.sh/install.ps1 | iex"
 
       - name: Setup Node
         uses: actions/setup-node@v3

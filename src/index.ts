@@ -1,7 +1,6 @@
 import {serve} from "./server";
 import {getLocalIp} from "./server/utils.ts";
 import packageJsonServer from '../package.json';
-import packageJsonUI from './ui/package.json';
 
 const DEFAULT_PORT = 8765;
 
@@ -10,7 +9,7 @@ const args = Bun.argv;
 const portIndex = args.indexOf('--port') || args.indexOf('-p');
 const hasUnknownArgs = args.length > 2 && portIndex === -1;
 
-const helpText = `FlowScore server v${packageJsonServer.version} with UI v${packageJsonUI.version}
+const helpText = `FlowScore server v${packageJsonServer.version}
     Usage: ./FlowScoreApp [OPTIONS]
     Options:
      --port, -p    Set custom port number. Default is ${DEFAULT_PORT}.

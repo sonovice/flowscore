@@ -12,13 +12,13 @@ This project aims to provide a streaming-based solution, divided into three main
 - Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
 ## 🏎 Run server
-To run the server, simply execute the previously built `FlowScoreApp`.
+To run the server, simply download and execute the binary file for your operating system from the [Releases](https://github.com/sonovice/flowscore/releases) page. The server will start on port 8765 by default.
 
 For now the CLI options are restricted to selecting a custom port:
 ```
 $ ./FlowScoreApp
-FlowScore server v1.0.0 with UI v1.0.0
-    Usage: ./FlowScoreApp [OPTIONS]
+FlowScore server v1.0.0
+    Usage: ./FlowScore [OPTIONS]
     Options:
      --port      Set custom port number. Default is 8765.
 ```

@@ -42,33 +42,38 @@ jobs:
           - os: windows-latest
             platform: windows
             arch: x64
-            install_command: powershell -c "irm bun.sh/install.ps1 | iex"
             executable: FlowScoreApp.exe
+            extension: .exe
           - os: ubuntu-latest
             platform: linux
             arch: x64
-            install_command: curl https://bun.sh/install | bash
             executable: FlowScoreApp
+            extension: ""
           - os: ubuntu-latest
             platform: linux
             arch: arm64
-            install_command: curl https://bun.sh/install | bash
             executable: FlowScoreApp
+            extension: ""
           - os: macos-latest
             platform: mac
             arch: x64
-            install_command: curl https://bun.sh/install | bash
             executable: FlowScoreApp
+            extension: ""
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Bun
-        run: ${{ matrix.install_command }}
+      - name: Install Bun on Linux/macOS
+        if: matrix.os != 'windows-latest'
+        run: |
+          curl https://bun.sh/install | bash
+          echo "BUN_BIN=$(echo $HOME/.bun/bin)" >> $GITHUB_ENV
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+      - name: Install Bun on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          powershell -c "irm bun.sh/install.ps1 | iex"
+          echo "C:\Users\runneradmin\.bun\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Run build
         run: bun run build
@@ -76,26 +81,45 @@ jobs:
       - name: Rename and upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.executable }}-v${{ needs.check-version.outputs.new_version }}"
-          path: path/to/build/output/${{ matrix.executable }}
+          name: "FlowScore-${{ matrix.platform }}-${{ matrix.arch }}-v${{ needs.check-version.outputs.new_version }}${{ matrix.extension }}"
+          path: src/${{ matrix.executable }}
+          if-no-files-found: error
+          retention-days: 1
 
   create-release:
-    needs: build-and-release
+    needs: [check-version, build-and-release]
     if: ${{ always() }} && needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
+        with:
+          path: ~/artifacts
+
+      - name: Rename and move artifacts
+        run: |
+          mkdir -p /home/runner/release
+          for dir in ~/artifacts/*; do
+            if [ -d "$dir" ]; then
+              base=$(basename "$dir")
+              file=$(ls "$dir")
+              mv "$dir/$file" "/home/runner/release/${base}"
+            fi
+          done
+        shell: bash
+
+      - name: List artifacts
+        run: ls -lR ~/release
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.check-version.outputs.new_version }}
-          name: FlowScore v${{ needs.check-version.outputs.new_version }}
+          tag_name: "v${{ needs.check-version.outputs.new_version }}"
+          name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: |
-            *.exe
-            FlowScoreApp
+          files: /home/runner/release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -70,6 +70,7 @@ jobs:
         run: |
           powershell -c "irm bun.sh/install.ps1 | iex"
           echo "C:\Users\runneradmin\.bun\bin" >> $GITHUB_PATH
+          Set-Alias -Name bun -Value "C:\Users\runneradmin\.bun\bin\bun.exe"
 
       - name: Setup Node
         uses: actions/setup-node@v3

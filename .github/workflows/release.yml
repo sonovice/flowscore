@@ -106,6 +106,6 @@ jobs:
           name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: /home/runner/artifacts/**/FlowScore-*
+          files: /home/runner/artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

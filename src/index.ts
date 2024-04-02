@@ -4,22 +4,20 @@ import packageJsonServer from '../package.json';
 import packageJsonUI from './ui/package.json';
 
 // Parse CLI arguments
-const args = Bun.argv.slice(2);
-const helpIndex = args.indexOf('--help') || args.indexOf('-h');
+const args = Bun.argv;
 const portIndex = args.indexOf('--port') || args.indexOf('-p');
-const hasUnknownArgs = args.length > 0 && helpIndex === -1 && portIndex === -1;
+const hasUnknownArgs = args.length > 2 && portIndex === -1;
 
 const helpText = `FlowScore server v${packageJsonServer.version} with UI v${packageJsonUI.version}
     Usage: ./FlowScoreApp [OPTIONS]
     Options:
-     --port      Set custom port number. Default is 8765.
-     --help      Show this help menu.
+     --port, -p    Set custom port number. Default is 8765.
   `
 
 // Print help
 console.log(helpText);
 
-if (helpIndex !== -1 || hasUnknownArgs) {
+if (hasUnknownArgs) {
   process.exit(0);
 }
 

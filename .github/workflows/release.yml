@@ -102,7 +102,15 @@ jobs:
           for dir in ~/artifacts/*; do
             if [ -d "$dir" ]; then
               base=$(basename "$dir")
-              mv "$dir"/* "/home/runner/release/${base}"
+              file=$(ls "$dir")
+              # Get the extension of the file
+              ext="${file##*.}"
+              # Add the extension to the base name if it exists
+              if [[ -n "$ext" && "$file" != "$ext" ]]; then
+                mv "$dir/$file" "/home/runner/release/${base}.${ext}"
+              else
+                mv "$dir/$file" "/home/runner/release/${base}"
+              fi
             fi
           done
         shell: bash

@@ -49,7 +49,7 @@ function App() {
   return (
     <>
       <Show when={showSettings()}>
-        <SettingsModal onClose={handleCloseSettingsModal}/>
+        <SettingsModal onClose={handleCloseSettingsModal} isConnected={isWebSocketConnected()}/>
       </Show>
 
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">

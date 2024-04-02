@@ -4,7 +4,7 @@
     "name": "Simon Waloschek",
     "email": "waloschek@pm.me"
   },
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,7 +28,7 @@
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10",
+    "vite": "^5.2.7",
     "vite-plugin-solid": "^2.8.0"
   }
 }

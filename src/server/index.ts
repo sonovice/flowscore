@@ -1,5 +1,5 @@
 import {cors} from '@elysiajs/cors';
-import {Elysia} from "elysia";
+import Elysia from "elysia";
 import pako from 'pako';
 import minifyXML from "minify-xml";
 
@@ -52,6 +52,7 @@ export function serve(host: string, port: number) {
       }
 
       const file = getStaticFile(path);
+
       if (await file.exists()) {
         console.log(`[${new Date().toISOString()}] ${COLOR_GREEN}GET "${path}" ${COLOR_GREEN_BOX}200${COLOR_RESET}`);
         return new Response(file, { headers: { 'Content-Type': file.type } });

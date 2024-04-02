@@ -96,6 +96,16 @@ jobs:
         with:
           path: ~/artifacts
 
+      - name: Rename and move artifacts
+        run: |
+          for dir in ~/artifacts/*; do
+            if [ -d "$dir" ]; then
+              base=$(basename "$dir")
+              mv "$dir"/* "/home/runner/artifacts/$base"
+            fi
+          done
+        shell: bash
+
       - name: List artifacts
         run: ls -lR ~/artifacts
 

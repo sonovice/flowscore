@@ -79,10 +79,12 @@ jobs:
         run: bun run build
 
       - name: Rename and upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "FlowScore-${{ matrix.platform }}-${{ matrix.arch }}-v${{ needs.check-version.outputs.new_version }}${{ matrix.extension }}"
           path: src/${{ matrix.executable }}
+          if-no-files-found: error
+          retention-days: 1
 
   create-release:
     needs: build-and-release
@@ -101,6 +103,6 @@ jobs:
           name: FlowScore v${{ needs.check-version.outputs.new_version }}
           draft: false
           prerelease: false
-          files: FlowScore-*
+          files: "**/FlowScore-*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

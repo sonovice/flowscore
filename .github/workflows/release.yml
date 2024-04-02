@@ -79,7 +79,7 @@ jobs:
         run: bun run build
 
       - name: Rename and upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: "FlowScore-${{ matrix.platform }}-${{ matrix.arch }}-v${{ needs.check-version.outputs.new_version }}${{ matrix.extension }}"
           path: src/${{ matrix.executable }}
@@ -92,18 +92,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
-          path: artifacts
+          path: ~/artifacts
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.check-version.outputs.new_version }}
-          name: FlowScore v${{ needs.check-version.outputs.new_version }}
+          tag_name: "v${{ needs.check-version.outputs.new_version }}"
+          name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: |
-            artifacts/**/*
+          files: ~/artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -96,6 +96,9 @@ jobs:
         with:
           path: ~/artifacts
 
+      - name: List artifacts
+        run: ls -lR ~/artifacts
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -103,6 +106,6 @@ jobs:
           name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: /home/runner/artifacts/FlowScore-*
+          files: /home/runner/artifacts/**/FlowScore-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

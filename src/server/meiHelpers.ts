@@ -3,9 +3,9 @@ import {DOMParser} from 'xmldom';
 
 const parser = new DOMParser();
 
-function hasElementChildren(node: Node) {
-  for (let i = 0; i < node.childNodes.length; i++) {
-    if (node.childNodes[i].nodeType === 1) {
+function hasElementChildren(element: Element) {
+  for (let i = 0; i < element.childNodes.length; i++) {
+    if (element.childNodes[i].nodeType === 1) {
       return true;
     }
   }
@@ -24,6 +24,17 @@ export function cleanMei(meiString: string): string {
   return mei.toString();
 }
 
+function removeEmptyStaffGrps(element: Element) {
+  const staffGrps = select(`.//*[local-name()="staffGrp"]`, element) as Element[];
+  staffGrps.forEach(staffGrp => {
+    if (!hasElementChildren(staffGrp)) {
+      staffGrp.parentNode!.removeChild(staffGrp);
+    } else {
+      removeEmptyStaffGrps(staffGrp);
+    }
+  });
+}
+
 export function splitMei(meiString: string, staves: string): Document {
   const mei = parser.parseFromString(meiString)
 
@@ -33,38 +44,34 @@ export function splitMei(meiString: string, staves: string): Document {
 
   const stavesSplitted = staves.split(',');
 
-  // Remove all undesired <staffDef> and <staffGrp> elements
-  (select(`//*[local-name()="staffGrp"]`, mei) as Node[]).forEach(staffGrp => {
-    (select(`./*[local-name()="staffDef"]`, staffGrp) as Node[]).forEach(staffDef => {
-      const n = (staffDef as Element).getAttribute('n');
-      if (n && !stavesSplitted.includes(n)) {
-        staffDef.parentNode!.removeChild(staffDef);
-      }
-    });
-
-    if (!hasElementChildren(staffGrp)) {
-      staffGrp.parentNode!.removeChild(staffGrp);
+  // Remove all undesired <staffDef> elements
+  (select(`//*[local-name()="staffDef"]`, mei) as Element[]).forEach(staffDef => {
+    const n = staffDef.getAttribute('n');
+    if (n && !stavesSplitted.includes(n)) {
+      staffDef.parentNode!.removeChild(staffDef);
     }
   });
 
+  removeEmptyStaffGrps(mei.documentElement);
+
   // Remove @symbol in <staffGrp> if only a single staff is requested
   if (stavesSplitted.length === 1) {
-    (select(`//*[local-name()="staffGrp"]`, mei) as Node[]).forEach(staffGrp => {
-      (staffGrp as Element).removeAttribute('symbol');
+    (select(`//*[local-name()="staffGrp"]`, mei) as Element[]).forEach(staffGrp => {
+      staffGrp.removeAttribute('symbol');
     });
   }
 
   // Remove all undesired <staff> elements
-  (select(`//*[local-name()="staff"]`, mei) as Node[]).forEach(staff => {
-    const n = (staff as Element).getAttribute('n');
+  (select(`//*[local-name()="staff"]`, mei) as Element[]).forEach(staff => {
+    const n = staff.getAttribute('n');
     if (n && !stavesSplitted.includes(n)) {
       staff.parentNode!.removeChild(staff)
     }
   });
 
   // Remove all elements with a @staff attribute that does not match the desired staves
-  (select(`//*[@staff]`, mei) as Node[]).forEach(elem => {
-    const n = (elem as Element).getAttribute('staff');
+  (select(`//*[@staff]`, mei) as Element[]).forEach(elem => {
+    const n = elem.getAttribute('staff');
     if (n && !stavesSplitted.includes(n)) {
       elem.parentNode!.removeChild(elem)
     }

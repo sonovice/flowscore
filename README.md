@@ -16,8 +16,8 @@ To run the server, simply download and execute the binary file for your operatin
 
 For now the CLI options are restricted to selecting a custom port:
 ```
-$ ./FlowScoreApp
-FlowScore server v1.0.0
+$ ./FlowScore
+FlowScore server v1.0.2
     Usage: ./FlowScore [OPTIONS]
     Options:
      --port      Set custom port number. Default is 8765.

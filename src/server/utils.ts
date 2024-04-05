@@ -41,10 +41,14 @@ export function displayClients(subscribedStaves: any) {
 export function getLocalIp(): string {
   const netInterfaces = os.networkInterfaces();
   for (const netInterfaceName in netInterfaces) {
+    // Skip virtual interfaces
+    if (netInterfaceName.includes('WSL') || netInterfaceName.includes('Virtual') || netInterfaceName.includes('Loopback') || netInterfaceName.includes('VPN') || netInterfaceName.includes('vEthernet')) {
+      continue;
+    }
     const netInterface = netInterfaces[netInterfaceName];
     if (netInterface) {
       for (const iface of netInterface) {
-        // Look vor IPv4 and only internal address
+        // Look for IPv4 and only internal address
         if (iface.family === 'IPv4' && !iface.internal) {
           return iface.address;
         }

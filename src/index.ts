@@ -4,6 +4,10 @@ import packageJsonServer from '../package.json';
 
 const DEFAULT_PORT = 8765;
 
+/**
+ * Main entry point for the application.
+ */
+
 // Parse CLI arguments
 const args = Bun.argv;
 const portIndex = args.indexOf('--port') || args.indexOf('-p');
@@ -18,6 +22,7 @@ const helpText = `FlowScore server v${packageJsonServer.version}
 // Print help
 console.log(helpText);
 
+// If there are unknown arguments, exit the process
 if (hasUnknownArgs) {
   process.exit(0);
 }

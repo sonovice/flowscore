@@ -3,6 +3,12 @@ import {DOMParser} from 'xmldom';
 
 const parser = new DOMParser();
 
+/**
+ * Checks if an (XML) element has child elements.
+ *
+ * @param {Element} element - The element to check.
+ * @returns {boolean} - True if the element has child elements, false otherwise.
+ */
 function hasElementChildren(element: Element) {
   for (let i = 0; i < element.childNodes.length; i++) {
     if (element.childNodes[i].nodeType === 1) {
@@ -12,6 +18,12 @@ function hasElementChildren(element: Element) {
   return false;
 }
 
+/**
+ * Cleans the MEI string by removing <meiHead>, <pgHead> and <pgFoot>.
+ *
+ * @param {string} meiString - The MEI string to clean.
+ * @returns {string} - The cleaned MEI string.
+ */
 export function cleanMei(meiString: string): string {
   const mei = parser.parseFromString(meiString, 'application/xml');
   const elementsToRemove = select('(//*[local-name()="meiHead"] | //*[local-name()="pgHead"] | //*[local-name()="pgFoot"])', mei) as Node[];
@@ -24,6 +36,11 @@ export function cleanMei(meiString: string): string {
   return mei.toString();
 }
 
+/**
+ * Recursively removes empty staffGrp elements from the given element.
+ *
+ * @param {Element} element - The element to remove empty staffGrp elements from.
+ */
 function removeEmptyStaffGrps(element: Element) {
   const staffGrps = select(`.//*[local-name()="staffGrp"]`, element) as Element[];
   staffGrps.forEach(staffGrp => {
@@ -35,7 +52,14 @@ function removeEmptyStaffGrps(element: Element) {
   });
 }
 
-export function splitMei(meiString: string, staves: string): Document {
+/**
+ * Removes all staff elements from an MEI string that are not in the list of desired staves.
+ *
+ * @param {string} meiString - The MEI string to process.
+ * @param {string} staves - The staves to filter by.
+ * @returns {Document} - The filtered MEI document.
+ */
+export function filterStaves(meiString: string, staves: string): Document {
   const mei = parser.parseFromString(meiString)
 
   if (staves == 'all' || !staves) {
@@ -52,6 +76,7 @@ export function splitMei(meiString: string, staves: string): Document {
     }
   });
 
+  // Remove empty <staffGrp> elements
   removeEmptyStaffGrps(mei.documentElement);
 
   // Remove @symbol in <staffGrp> if only a single staff is requested
@@ -69,7 +94,7 @@ export function splitMei(meiString: string, staves: string): Document {
     }
   });
 
-  // Remove all elements with a @staff attribute that does not match the desired staves
+  // Remove all elements with @staff attributes that do not match the desired staves
   (select(`//*[@staff]`, mei) as Element[]).forEach(elem => {
     const n = elem.getAttribute('staff');
     if (n && !stavesSplitted.includes(n)) {

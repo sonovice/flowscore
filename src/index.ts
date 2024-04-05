@@ -27,4 +27,6 @@ const localIP = getLocalIp();
 
 // Parse port from CLI arguments or default to DEFAULT_PORT
 let port = portIndex !== -1 && Bun.argv[portIndex + 1] ? Number(Bun.argv[portIndex + 1]) : DEFAULT_PORT;
+
+// Start the server
 serve(localIP, port);

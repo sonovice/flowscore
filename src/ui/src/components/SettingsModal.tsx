@@ -3,7 +3,14 @@ import ToggleSlider from "./ToggleSlider.tsx";
 import ToggleButton from "./ToggleButton.tsx";
 import {useSettings} from '../contexts/SettingsContext.tsx';
 
+/**
+ * SettingsModal component.
+ * This component provides a modal for the user to change various settings.
+ *
+ * @param {Object} props - The properties passed to the component.
+ */
 function SettingsModal(props) {
+  // Use the settings from the SettingsContext
   const {
     selectedStaves: [selectedStaves, setSelectedStaves],
     scoreScale: [scoreScale, setScoreScale],
@@ -14,16 +21,17 @@ function SettingsModal(props) {
     smoothScrolling: [smoothScrolling, setSmoothScrolling]
   } = useSettings();
 
+  // Create signals for the score scale and scroll percentage
   const [scaleValue, setScaleValue] = createSignal(scoreScale());
   const [scrollValue, setScrollValue] = createSignal(scrollPercentage());
 
-  function handleStaffToggle(i: number, isToggled: boolean) {
+  function handleStaffToggle(staffNum: number, isToggled: boolean) {
     let newSelectedStaves = [...selectedStaves()];
 
     if (isToggled) {
-      newSelectedStaves.push(i);
+      newSelectedStaves.push(staffNum);
     } else {
-      newSelectedStaves = newSelectedStaves.filter(num => num !== i);
+      newSelectedStaves = newSelectedStaves.filter(num => num !== staffNum);
     }
 
     newSelectedStaves.sort((a, b) => a - b);
@@ -152,7 +160,6 @@ function SettingsModal(props) {
               <div class="bg-gray-50 px-4 py-3 sm:flex justify-end">
                 <button type="button" class={`inline-flex w-full justify-center bg-white text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto mb-3 sm:mb-0`} onClick={props.onClear}>Clear</button>
                 <button type="button" class={`${props.isConnected ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"} inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`} onClick={props.onClose}>Close</button>
-                {/*<button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Close</button>*/}
               </div>
             </div>
           </div>

@@ -1,6 +1,13 @@
 import os from "node:os";
 
-
+/**
+ * Compares two strings based on the numeric values found within them.
+ * If the numeric values are equal, it falls back to a locale-based string comparison.
+ *
+ * @param {string} a - The first string to compare.
+ * @param {string} b - The second string to compare.
+ * @returns {number} - A negative number if `a` should be sorted before `b`, a positive number if `a` should be sorted after `b`, or 0 if they are equal.
+ */
 export function compareNumbers(a: string, b: string): number {
   const extractNumbers = (str: string) => (str.match(/\d+/g) || []).map(Number);
 
@@ -22,7 +29,12 @@ export function compareNumbers(a: string, b: string): number {
   return a.localeCompare(b);
 }
 
-
+/**
+ * Displays the number of clients connected to each staff.
+ * The staff numbers are sorted and displayed along with a bar representation of the count.
+ *
+ * @param {any} subscribedStaves - An object where the keys are staff numbers and the values are the count of clients connected to that staff.
+ */
 export function displayClients(subscribedStaves: any) {
   console.clear();
   // @ts-ignore
@@ -37,7 +49,13 @@ export function displayClients(subscribedStaves: any) {
   });
 }
 
-
+/**
+ * Retrieves the local IP address of the machine.
+ * It skips virtual interfaces and looks for an IPv4 address that is not internal.
+ *
+ * @returns {string} - The local IP address.
+ * @throws {Error} - If unable to retrieve the local network IP address.
+ */
 export function getLocalIp(): string {
   const netInterfaces = os.networkInterfaces();
   for (const netInterfaceName in netInterfaces) {

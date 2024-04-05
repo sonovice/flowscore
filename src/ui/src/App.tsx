@@ -9,33 +9,44 @@ import {useSettings} from "./contexts/SettingsContext.tsx";
 
 import SettingsModal from "./components/SettingsModal.tsx";
 
-
+/**
+ * Main application component.
+ *
+ * This component is responsible for managing the application state and rendering the main UI.
+ */
 function App() {
+  // Use settings from the SettingsContext
   const {
     showSeparator: [showSeparator],
     colorizeBottomSystem: [colorizeBottomSystem]
   } = useSettings();
+
+  // Create signals for managing state
   const [svgStrings, setSvgStrings] = createSignal<string[]>([]);
   const [showSettings, setShowSettings] = createSignal(true);
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
   const [isScrolling, setIsScrolling] = createSignal(false);
 
-
+  // References to DOM elements and external objects
   let containerRef: HTMLDivElement;
   let viewerRef: HTMLDivElement;
   let virtualScroller: VirtualScroller<string>;
 
+  /**
+   * Function to render SVG string as an HTML element.
+   *
+   * @param {string} svgString - The SVG string to render.
+   * @returns {HTMLElement} The rendered SVG string as an HTML element.
+   */
   function renderSvgString(svgString: string): HTMLElement {
     return (<div class="viewer-system max-h-screen bg-white mb-1" innerHTML={svgString}></div>) as HTMLElement
   }
 
-  onMount(() => {
-    const {highlightSystem} = useHighlighting(containerRef, svgStrings, colorizeBottomSystem, isScrolling);
-    virtualScroller = new VirtualScroller(viewerRef, [], renderSvgString, {scrollableContainer: containerRef});
-    useScoreProvider(svgStrings, setSvgStrings, containerRef, virtualScroller, setIsWebSocketConnected);
-    useInputHandler(containerRef, highlightSystem, setIsScrolling);
-  });
-
+  /**
+   * Function to handle closing the settings modal.
+   *
+   * This function also enables the NoSleep functionality to prevent the device from sleeping.
+   */
   async function handleCloseSettingsModal() {
     setShowSettings(false);
     try {
@@ -46,20 +57,37 @@ function App() {
     }
   }
 
+  /**
+   * Function to clear the score.
+   *
+   * This function resets all rendered score SVGs.
+   */
   function handleClearScore() {
-      setSvgStrings([]);
+    setSvgStrings([]);
   }
 
+  // Initialize the application on mount
+  onMount(() => {
+    const {highlightSystem} = useHighlighting(containerRef, svgStrings, colorizeBottomSystem, isScrolling);
+    virtualScroller = new VirtualScroller(viewerRef, [], renderSvgString, {scrollableContainer: containerRef});
+    useScoreProvider(svgStrings, setSvgStrings, containerRef, virtualScroller, setIsWebSocketConnected);
+    useInputHandler(containerRef, highlightSystem, setIsScrolling);
+  });
+
+  // Render the application UI
   return (
     <>
+      {/* Render the settings modal */}
       <Show when={showSettings()}>
         <SettingsModal onClose={handleCloseSettingsModal} onClear={handleClearScore} isConnected={isWebSocketConnected()}/>
       </Show>
 
+      {/* Render the score viewer */}
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">
         <div class={showSeparator() ? "bg-blue-100" : ""} ref={viewerRef!}/>
       </div>
 
+      {/* Render the settings button */}
       <Show when={!isWebSocketConnected()}>
         <div class="animate-ping fixed bottom-4 right-4 inline-flex h-12 w-12 rounded-full bg-red-500 opacity-75"></div>
       </Show>
@@ -72,10 +100,6 @@ function App() {
           </svg>
         </div>
       </button>
-
-      <div class="fixed top-1 right-1">
-        {/*{svgStrings().length}*/}
-      </div>
     </>
   )
 }

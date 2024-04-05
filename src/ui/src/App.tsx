@@ -1,5 +1,5 @@
 import {createSignal, onMount, Show} from 'solid-js';
-import VirtualScroller from 'virtual-scroller/dom';
+import VirtualScroller from './externals/virtual-scroller-1.12.4/DOM/VirtualScroller';
 import NoSleep from '@zakj/no-sleep';
 
 import {useHighlighting} from './hooks/useHighlighting';

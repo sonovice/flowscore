@@ -88,7 +88,7 @@ jobs:
 
   create-release:
     needs: [check-version, build-and-release]
-    if: ${{ always() }} && needs.check-version.outputs.version_changed == 'true'
+    if: ${{ success() }} && needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write

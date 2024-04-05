@@ -9,7 +9,8 @@ export function useInputHandler(
   const {
     smartScroll: [smartScroll],
     scrollPercentage: [scrollPercentage],
-    colorizeBottomSystem: [colorizeBottomSystem]
+    colorizeBottomSystem: [colorizeBottomSystem],
+    smoothScrolling: [smoothScrolling]
   } = useSettings();
 
 
@@ -75,12 +76,18 @@ export function useInputHandler(
         if (boundingRects[i].bottom > screenHeight) {
           const targetSystem = systems[i] as HTMLDivElement;
           const nextSystemTop = targetSystem.getBoundingClientRect().top + containerRef.scrollTop + 1; // +1 to make sure that screen filling pages will not break next key press
-          containerRef.scrollTo({top: nextSystemTop, behavior: 'smooth'});
+          containerRef.scrollTo({
+            top: nextSystemTop,
+            behavior: smoothScrolling() ? 'smooth' : 'instant'
+          });
           break;
         }
       }
     } else {
-      containerRef.scrollTo({top: containerRef.scrollTop + (screenHeight * scrollPercentage() / 100), behavior: 'smooth'});
+      containerRef.scrollTo({
+        top: containerRef.scrollTop + (screenHeight * scrollPercentage() / 100),
+        behavior: smoothScrolling() ? 'smooth' : 'instant'
+      });
     }
   }
 

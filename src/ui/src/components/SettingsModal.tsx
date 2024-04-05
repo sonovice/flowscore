@@ -10,7 +10,8 @@ function SettingsModal(props) {
     colorizeBottomSystem: [colorizeBottomSystem, setColorizeBottomSystem],
     smartScroll: [smartScroll, setSmartScroll],
     scrollPercentage: [scrollPercentage, setScrollPercentage],
-    showSeparator: [showSeparator, setShowSeparator]
+    showSeparator: [showSeparator, setShowSeparator],
+    smoothScrolling: [smoothScrolling, setSmoothScrolling]
   } = useSettings();
 
   const [scaleValue, setScaleValue] = createSignal(scoreScale());
@@ -39,6 +40,10 @@ function SettingsModal(props) {
 
   function handleColorizeBottomSystemChange(isToggled: boolean) {
     setColorizeBottomSystem(isToggled);
+  }
+
+  function handleSmoothScrollingChange(isToggled: boolean) {
+    setSmoothScrolling(isToggled);
   }
 
   function handleSmartScrollChange(isToggled: boolean) {
@@ -111,6 +116,14 @@ function SettingsModal(props) {
                         </div>
                         <p class="text-sm text-gray-500">
                           This option colors the bottommost system to provide better orientation when turning pages.
+                        </p>
+
+                        <div class="mt-6 flex flew-row">
+                          <ToggleSlider isToggled={smoothScrolling()} onToggle={handleSmoothScrollingChange}/>
+                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Use smooth scrolling</label>
+                        </div>
+                        <p class="text-sm text-gray-500">
+                          Sets whether scrolling should happen with a smooth animation or instantly.
                         </p>
 
                         <div class="mt-6 flex flew-row">

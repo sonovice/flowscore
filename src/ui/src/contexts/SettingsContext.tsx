@@ -8,6 +8,7 @@ export interface UserSettings {
   smartScroll: [Accessor<boolean>, Setter<boolean>];
   scrollPercentage: [Accessor<number>, Setter<number>];
   showSeparator: [Accessor<boolean>, Setter<boolean>];
+  smoothScrolling: [Accessor<boolean>, Setter<boolean>];
 }
 
 const SettingsContext = createContext<UserSettings>();
@@ -25,6 +26,7 @@ export const SettingsProvider: Component<{ children: any }> = (props) => {
   const [smartScroll, setSmartScroll] = createSignal<boolean>(Cookies.get('smartScroll') === 'true');
   const [scrollPercentage, setScrollPercentage] = createSignal<number>(parseInt(Cookies.get('scrollPercentage') || "75"));
   const [showSeparator, setShowSeparator] = createSignal<boolean>(Cookies.get('showSeparator') === 'true');
+  const [smoothScrolling, setSmoothScrolling] = createSignal<boolean>(Cookies.get('smoothScrolling') === 'true');
 
   createEffect(() => {
     Cookies.set('selectedStaves', JSON.stringify(selectedStaves()));
@@ -37,6 +39,7 @@ export const SettingsProvider: Component<{ children: any }> = (props) => {
   createEffect(() => Cookies.set('smartScroll', smartScroll().toString()));
   createEffect(() => Cookies.set('scrollPercentage', scrollPercentage().toString()));
   createEffect(() => Cookies.set('showSeparator', showSeparator().toString()));
+  createEffect(() => Cookies.set('smoothScrolling', smoothScrolling().toString()));
 
   return (
     <SettingsContext.Provider value={{
@@ -45,7 +48,8 @@ export const SettingsProvider: Component<{ children: any }> = (props) => {
       colorizeBottomSystem: [colorizeBottomSystem, setColorizeBottomSystem],
       smartScroll: [smartScroll, setSmartScroll],
       scrollPercentage: [scrollPercentage, setScrollPercentage],
-      showSeparator: [showSeparator, setShowSeparator]
+      showSeparator: [showSeparator, setShowSeparator],
+      smoothScrolling: [smoothScrolling, setSmoothScrolling]
     }}>
       {props.children}
     </SettingsContext.Provider>

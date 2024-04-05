@@ -4,7 +4,7 @@
     "name": "Simon Waloschek",
     "email": "waloschek@pm.me"
   },
-  "version": "1.1.1",
+  "version": "1.1.2",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -27,6 +27,7 @@
     "minify-xml": "^4.3.0",
     "pako": "^2.1.0",
     "xmldom": "^0.6.0",
-    "xpath": "^0.0.34"
+    "xpath": "^0.0.34",
+    "request-animation-frame-timeout": "^1.0.0"
   }
 }

@@ -108,7 +108,7 @@ export function useScoreProvider(
 
   createEffect(() => {
     // Reset score if settings have been changed
-    setSvgStrings([]);
+    // setSvgStrings([]);
 
     // Reconnect WebSocket if staff selection changed
     const selectedStavesString = selectedStaves().join(',');

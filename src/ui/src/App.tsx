@@ -46,10 +46,14 @@ function App() {
     }
   }
 
+  function handleClearScore() {
+      setSvgStrings([]);
+  }
+
   return (
     <>
       <Show when={showSettings()}>
-        <SettingsModal onClose={handleCloseSettingsModal} isConnected={isWebSocketConnected()}/>
+        <SettingsModal onClose={handleCloseSettingsModal} onClear={handleClearScore} isConnected={isWebSocketConnected()}/>
       </Show>
 
       <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">

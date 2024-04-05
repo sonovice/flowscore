@@ -63,7 +63,10 @@ export function useInputHandler(
   }
 
   function scrollBackward() {
-    containerRef.scrollTo({top: containerRef.scrollTop - (containerRef.clientHeight * scrollPercentage() / 100), behavior: 'smooth'});
+    containerRef.scrollTo({
+      top: containerRef.scrollTop - (containerRef.clientHeight * scrollPercentage() / 100),
+      behavior: smoothScrolling() ? 'smooth' : 'instant'
+    });
   }
 
   function scrollForward() {

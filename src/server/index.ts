@@ -82,10 +82,10 @@ export function serve(host: string, port: number) {
           case 'provider':
             // If the message is from a provider, clean the MEI, split into requested staves, compress and send to clients
             console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PROVIDER New MEI data${COLOR_RESET}`);
-            const fullMei = cleanMei(message.toString());
+            const fullMeiString = cleanMei(message.toString());
             Object.keys(subscribedStaves).forEach(async staves => {
-              const meiString = filterStaves(fullMei, staves).toString();
-              const compressedMeiString = pako.deflate(minifyXML(meiString));
+              const filteredMeiString = filterStaves(fullMeiString, staves);
+              const compressedMeiString = pako.deflate(minifyXML(filteredMeiString));
               app.server!.publish(staves, compressedMeiString, false);
               // console.log(`[${new Date().toISOString()}] ${COLOR_BLUE}PUBLISHED Staves "${staves}"${COLOR_RESET}`);
             });

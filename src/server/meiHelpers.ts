@@ -57,15 +57,15 @@ function removeEmptyStaffGrps(element: Element) {
  *
  * @param {string} meiString - The MEI string to process.
  * @param {string} staves - The staves to filter by.
- * @returns {Document} - The filtered MEI document.
+ * @returns {String} The MEI string with the undesired staves removed.
  */
-export function filterStaves(meiString: string, staves: string): Document {
-  const mei = parser.parseFromString(meiString)
-
-  if (staves == 'all' || !staves) {
-    return mei;
+export function filterStaves(meiString: string, staves: string): String {
+  // If all staves are requested, return the MEI string as is
+  if (staves === 'all' || staves === '' || !staves) {
+    return meiString;
   }
 
+  const mei = parser.parseFromString(meiString)
   const stavesSplitted = staves.split(',');
 
   // Remove all undesired <staffDef> elements
@@ -102,5 +102,5 @@ export function filterStaves(meiString: string, staves: string): Document {
     }
   });
 
-  return mei;
+  return mei.toString();
 }

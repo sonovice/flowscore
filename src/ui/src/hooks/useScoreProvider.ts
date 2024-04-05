@@ -2,7 +2,7 @@ import {createEffect, Accessor, Setter} from 'solid-js';
 import pako, {Data} from 'pako';
 import {modifyLabels} from "../utils/meiHelpers.ts";
 import {VerovioOptions} from "verovio";
-import VirtualScroller from "virtual-scroller/dom";
+import VirtualScroller from '../externals/virtual-scroller-1.12.4/DOM/VirtualScroller';
 import {useSettings} from "../contexts/SettingsContext.tsx";
 
 /**

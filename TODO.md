@@ -16,10 +16,9 @@
 - [x] Add option to disable scroll animation
 
 # Docs
-- More comments in code for other devs!!!
-- Document "/stats"
-- Quick start for musicians
-- Process how to use the entire thing (how to install bun)
-- For Axel: How to save node_modules (first install bun)
-- Smart scrolling is badly explained
-- 
+- [x] More comments in code for other devs
+- [ ] Document "/stats" page
+- [ ] Quick start for musicians
+- [ ] Process how to use the entire thing (how to install bun)
+- [ ] For Axel: How to save node_modules (first install bun)
+- [ ] Smart scrolling is badly explained

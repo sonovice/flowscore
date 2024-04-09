@@ -2,6 +2,7 @@
 legacy/
 .vite/
 FlowScoreApp
+FlowScoreApp.exe
 
 # Logs
 logs

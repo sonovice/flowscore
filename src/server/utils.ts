@@ -1,5 +1,14 @@
 import os from "node:os";
 
+// Color constants for console output
+export const COLOR_RESET = '\x1b[0m';
+export const COLOR_RED = '\x1b[31m';
+export const COLOR_GREEN = '\x1b[32m';
+export const COLOR_YELLOW = '\x1b[33m';
+export const COLOR_BLUE = '\x1b[34m';
+export const COLOR_RED_BOX = '\x1b[41m\x1b[97m';
+export const COLOR_GREEN_BOX = '\x1b[42m\x1b[97m';
+
 /**
  * Compares two strings based on the numeric values found within them.
  * If the numeric values are equal, it falls back to a locale-based string comparison.

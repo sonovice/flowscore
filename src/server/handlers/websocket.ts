@@ -1,7 +1,7 @@
 import pako from "pako";
 import minifyXML from "minify-xml";
 import {app, providerConnected, subscribedStaves} from "../globals.ts";
-import {COLOR_BLUE, COLOR_RESET, COLOR_YELLOW} from "../utils.ts";
+import {COLOR_BLUE, COLOR_RESET, COLOR_YELLOW} from "../../utils.ts";
 import {cleanMei, filterStaves} from "../meiHelpers.ts";
 
 export function handle_open(ws: any) {

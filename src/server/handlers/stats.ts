@@ -1,4 +1,4 @@
-import {compareNumbers} from "../utils.ts";
+import {compareNumbers} from "../../utils.ts";
 import {subscribedStaves} from "../globals.ts";
 
 export function handle_stats() {

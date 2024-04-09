@@ -4,6 +4,7 @@ import {handle_static_files} from "./handlers/static.ts";
 import {handle_stats} from "./handlers/stats.ts";
 import {handle_close, handle_message, handle_open} from "./handlers/websocket.ts";
 import {app} from "./globals.ts";
+import {COLOR_GREEN, COLOR_RESET} from "../utils.ts";
 
 /**
  * Starts the server on the given host and port.
@@ -34,7 +35,7 @@ export function serve(host: string, port: number) {
     // '0.0.0.0' -> Listen on all interfaces
     .listen({port, hostname: '0.0.0.0'});
 
-  console.log(`🎶 FlowScore server is running.
-   Connect provider to "ws://${host}:${port}/ws?type=provider"
-   Connect clients to "http://${host}:${port}/"`);
+  console.log(`${COLOR_GREEN}🚀 Server is running.${COLOR_RESET}
+  Connect provider to "ws://${host}:${port}/ws?type=provider"
+  Connect clients to "http://${host}:${port}/"`);
 }

@@ -1,5 +1,5 @@
 import getStaticFile from "../../ui/dist-static";
-import {COLOR_GREEN, COLOR_GREEN_BOX, COLOR_RED, COLOR_RED_BOX, COLOR_RESET} from "../utils.ts";
+import {COLOR_GREEN, COLOR_GREEN_BOX, COLOR_RED, COLOR_RED_BOX, COLOR_RESET} from "../../utils.ts";
 
 export async function handle_static_files(params: { path: string }) {
   let path = params.path;

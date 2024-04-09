@@ -39,26 +39,6 @@ export function compareNumbers(a: string, b: string): number {
 }
 
 /**
- * Displays the number of clients connected to each staff.
- * The staff numbers are sorted and displayed along with a bar representation of the count.
- *
- * @param {any} subscribedStaves - An object where the keys are staff numbers and the values are the count of clients connected to that staff.
- */
-export function displayClients(subscribedStaves: any) {
-  console.clear();
-  // @ts-ignore
-  const totalCount = Object.values(subscribedStaves).reduce((a, b) => a + b, 0);
-  console.log(`Connected clients (${totalCount})`);
-  console.log("=================");
-  const sortedStaffNums = Object.keys(subscribedStaves).sort(compareNumbers);
-  sortedStaffNums.forEach(staffNum => {
-    const count = subscribedStaves[staffNum];
-    const bar = '█'.repeat(count);
-    console.log(`Staff ${staffNum}:\t${bar} (${count})`);
-  });
-}
-
-/**
  * Retrieves the local IP address of the machine.
  * It skips virtual interfaces and looks for an IPv4 address that is not internal.
  *

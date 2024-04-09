@@ -82,7 +82,7 @@ jobs:
 
       - name: Run build
         run: |
-          bun run prepare
+          bun run setup
           bun run build
 
       - name: Rename and upload artifact

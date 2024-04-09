@@ -8,8 +8,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
+    "setup": "bun install && cd src/ui && bun install && cd ../..",
     "dev": "bun run --hot src/index.ts",
-    "prepare": "bun install && cd src/ui && bun install && cd ../..",
     "build": "cd src/ui && bun run build && cd ../.. && bun build --compile --outfile FlowScoreApp src/index.ts"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import {createSignal, For} from "solid-js";
+import {createSignal, For, onCleanup, onMount} from "solid-js";
 import ToggleSlider from "./ToggleSlider.tsx";
 import ToggleButton from "./ToggleButton.tsx";
 import {useSettings} from '../contexts/SettingsContext.tsx';
@@ -24,6 +24,9 @@ function SettingsModal(props) {
   // Create signals for the score scale and scroll percentage
   const [scaleValue, setScaleValue] = createSignal(scoreScale());
   const [scrollValue, setScrollValue] = createSignal(scrollPercentage());
+
+  const [modalRef, setModalRef] = createSignal<HTMLDivElement | null>(null);
+
 
   function handleStaffToggle(staffNum: number, isToggled: boolean) {
     let newSelectedStaves = [...selectedStaves()];
@@ -62,13 +65,29 @@ function SettingsModal(props) {
     setScrollPercentage(parseInt(e.target.value, 10));
   }
 
+  function handleClickOutside(e: MouseEvent) {
+    const modal = modalRef();
+    if (modal && !modal.contains(e.target as Node)) {
+      props.onClose();
+    }
+  }
+
+
+  onMount(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  });
+
   return (
     <>
       <div class="ease-in-out duration-300 relative z-10" role="dialog">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div ref={setModalRef} class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div class={`bg-gradient-to-r ${props.isConnected ? "from-blue-600 to-blue-500" : "from-red-600 to-red-500"} text-white text-xl font-bold px-4 py-2`}>
                 FlowScore
               </div>

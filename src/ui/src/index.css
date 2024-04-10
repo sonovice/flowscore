@@ -2,11 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.viewer-system > svg {
-    max-height: 100vh;
-}
 
-/* Prevents zoom gestures anmd pull to refresh*/
+/* Prevents zoom gestures and pull to refresh*/
 html, body {
     touch-action: manipulation;
     overscroll-behavior-y: none;
@@ -24,4 +21,38 @@ html, body {
 .h-screen {
     height: 100vh; /* Fallback for browsers that do not support Custom Properties */
     height: calc(var(--vh, 1vh) * 100);
+    min-height: -webkit-fill-available;
+}
+.viewer-system > svg {
+    max-height: 100vh;
+    max-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Alternative to Times New Roman */
+@font-face {
+    font-family: 'Times';
+    src: url('/fonts/Tinos-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Times';
+    src: url('/fonts/Tinos-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Times';
+    src: url('/fonts/Tinos-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Times';
+    src: url('/fonts/Tinos-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
 }

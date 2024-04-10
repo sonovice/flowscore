@@ -138,6 +138,7 @@ export function useScoreProvider(
     const options: VerovioOptions = {
       adjustPageHeight: true,
       svgViewBox: true,
+      font: "Bravura",
       header: 'none',
       footer: 'none',
       justifyVertically: false,
@@ -148,6 +149,7 @@ export function useScoreProvider(
       pageMarginLeft: margin,
       pageMarginRight: margin,
       spacingSystem: 0,
+      breaks: "smart",
       scale,
       systemMaxPerPage: 1,
       condense: 'none',

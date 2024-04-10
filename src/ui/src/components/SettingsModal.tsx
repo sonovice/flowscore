@@ -1,4 +1,4 @@
-import {createSignal, For, onCleanup, onMount} from "solid-js";
+import {createSignal, For} from "solid-js";
 import ToggleSlider from "./ToggleSlider.tsx";
 import ToggleButton from "./ToggleButton.tsx";
 import {useSettings} from '../contexts/SettingsContext.tsx';
@@ -65,29 +65,22 @@ function SettingsModal(props) {
     setScrollPercentage(parseInt(e.target.value, 10));
   }
 
-  function handleClickOutside(e: MouseEvent) {
+  function handleClickOutside(e: Event) {
     const modal = modalRef();
-    if (modal && !modal.contains(e.target as Node)) {
+    if (modal && modal.contains(e.target as Node)) {
+      e.stopPropagation();
+    } else {
       props.onClose();
     }
   }
-
-
-  onMount(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-  });
-
-  onCleanup(() => {
-    document.removeEventListener('mousedown', handleClickOutside);
-  });
 
   return (
     <>
       <div class="ease-in-out duration-300 relative z-10" role="dialog">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div ref={setModalRef} class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+          <div onClick={e => handleClickOutside(e)} class="z-0 flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div ref={setModalRef} class="z-10 relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div class={`bg-gradient-to-r ${props.isConnected ? "from-blue-600 to-blue-500" : "from-red-600 to-red-500"} text-white text-xl font-bold pl-4 pr-2 py-2 flex flex-row items-center justify-stretch`}>
                 <div class="grow">
                   FlowScore

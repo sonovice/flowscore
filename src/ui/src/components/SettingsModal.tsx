@@ -88,98 +88,91 @@ function SettingsModal(props) {
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <div ref={setModalRef} class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div class={`bg-gradient-to-r ${props.isConnected ? "from-blue-600 to-blue-500" : "from-red-600 to-red-500"} text-white text-xl font-bold px-4 py-2`}>
-                FlowScore
+              <div class={`bg-gradient-to-r ${props.isConnected ? "from-blue-600 to-blue-500" : "from-red-600 to-red-500"} text-white text-xl font-bold pl-4 pr-2 py-2 flex flex-row items-center justify-stretch`}>
+                <div class="grow">
+                  FlowScore
+                </div>
+                <button type="button" class={`inline-flex justify-center bg-white hover:bg-gray-100 text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm ml-3 w-auto`} onClick={props.onClear}>Clear</button>
               </div>
-              <div class="bg-white px-4 pb-4 pt-3 sm:pt-5 sm:pb-4">
+              <div class="bg-white px-4 pb-4 pt-3 sm:pb-4">
                 <div class="sm:flex sm:items-start">
+                  <div class="mt-0">
+                    <form>
+                      <label class="block text-sm font-medium leading-6 text-gray-900">Select staves</label>
+                      <p class="text-sm text-gray-500">
+                        Select all staves that should be displayed. If no staff is selected, the entire score is shown.
+                      </p>
+                      <div class="mt-2 grid grid-cols-5 sm:grid-cols-10 gap-2">
+                        <For each={[...Array(30).keys()]}>{(i) =>
+                          <ToggleButton
+                            isToggled={selectedStaves().includes(i + 1)}
+                            onToggle={(isToggled: boolean) => handleStaffToggle(i + 1, isToggled)}>
+                            {i + 1}
+                          </ToggleButton>
+                        }</For>
+                      </div>
 
-                  <div class="hidden sm:flex mx-auto h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <svg class="h-6 w-6 text-blue-500" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                      <path
-                        d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/>
-                    </svg>
-                  </div>
-                  <div class="sm:ml-4 mt-0">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Settings</h3>
-                    <div class="mt-2">
-                      <form>
-                        <label class="block text-sm font-medium leading-6 text-gray-900">Select staves</label>
-                        <p class="text-sm text-gray-500">
-                          Select all staves that should be displayed. If no staff is selected, the entire score is shown.
-                        </p>
-                        <div class="mt-2 grid grid-cols-5 sm:grid-cols-10 gap-2">
-                          <For each={[...Array(30).keys()]}>{(i) =>
-                            <ToggleButton
-                              isToggled={selectedStaves().includes(i + 1)}
-                              onToggle={(isToggled: boolean) => handleStaffToggle(i + 1, isToggled)}>
-                              {i + 1}
-                            </ToggleButton>
-                          }</For>
-                        </div>
+                      <div class="mt-4 flex flew-row">
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Score size</label>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        Selects the size of the displayed score.
+                      </p>
+                      <div class="flex flew-row mt-1 items-center w-full">
+                        <input type="range" min="30" max="100" step="1" value={scaleValue()} onInput={(e) => setScaleValue(parseInt(e.target.value, 10))} onChange={handleScoreScaleChange} class="w-full accent-blue-500"/>
+                        <div class="w-6 ml-3 text-gray-900 text-sm text-right">{scaleValue()}</div>
+                      </div>
 
-                        <div class="mt-6 flex flew-row">
-                          <label class="block text-sm font-medium leading-6 text-gray-900">Score size</label>
-                        </div>
-                        <p class="text-sm text-gray-500">
-                          Selects the size of the displayed score.
-                        </p>
-                        <div class="flex flew-row mt-1 items-center w-full">
-                          <input type="range" min="30" max="100" step="1" value={scaleValue()} onInput={(e) => setScaleValue(parseInt(e.target.value, 10))} onChange={handleScoreScaleChange} class="w-full accent-blue-500"/>
-                          <div class="w-6 ml-3 text-gray-900 text-sm text-right">{scaleValue()}</div>
-                        </div>
+                      <div class="mt-4 flex flew-row">
+                        <ToggleSlider isToggled={showSeparator()} onToggle={handleShowSeparatorChange}/>
+                        <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Show separator between staves</label>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        If activated, a small line is displayed between systems to make it easier to distinguish between them.
+                      </p>
 
-                        <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={showSeparator()} onToggle={handleShowSeparatorChange}/>
-                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Show separator between staves</label>
-                        </div>
-                        <p class="text-sm text-gray-500">
-                          If activated, a small line is displayed between systems to make it easier to distinguish between them.
-                        </p>
+                      <div class="mt-4 flex flew-row">
+                        <ToggleSlider isToggled={colorizeBottomSystem()} onToggle={handleColorizeBottomSystemChange}/>
+                        <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Colorize bottom system</label>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        This option colors the bottommost system to provide better orientation when turning pages.
+                      </p>
 
-                        <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={colorizeBottomSystem()} onToggle={handleColorizeBottomSystemChange}/>
-                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Colorize bottom system</label>
-                        </div>
-                        <p class="text-sm text-gray-500">
-                          This option colors the bottommost system to provide better orientation when turning pages.
-                        </p>
+                      <div class="mt-4 flex flew-row">
+                        <ToggleSlider isToggled={smoothScrolling()} onToggle={handleSmoothScrollingChange}/>
+                        <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Scroll smoothly</label>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        Sets whether scrolling should happen with a smooth animation or instantly.
+                      </p>
 
-                        <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={smoothScrolling()} onToggle={handleSmoothScrollingChange}/>
-                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Use smooth scrolling</label>
-                        </div>
-                        <p class="text-sm text-gray-500">
-                          Sets whether scrolling should happen with a smooth animation or instantly.
-                        </p>
+                      <div class="mt-4 flex flew-row">
+                        <ToggleSlider isToggled={smartScroll()} onToggle={handleSmartScrollChange}/>
+                        <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Smart scrolling</label>
+                      </div>
+                      <p class="text-sm text-gray-500">
+                        With this activated scrolling will move the bottommost system to the top of the screen when turning pages.
+                      </p>
 
-                        <div class="mt-6 flex flew-row">
-                          <ToggleSlider isToggled={smartScroll()} onToggle={handleSmartScrollChange}/>
-                          <label class="ml-4 block text-sm font-medium leading-6 text-gray-900">Smart scrolling</label>
-                        </div>
-                        <p class="text-sm text-gray-500">
-                          Instead of scrolling with a fixed increment, the optimum value is determined automatically.
-                        </p>
-
-                        <div class="mt-6 flex flew-row">
-                          <label class={`block text-sm font-medium leading-6 ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>Scroll size</label>
-                        </div>
-                        <p class={`text-sm ${smartScroll() ? "text-gray-400" : "text-gray-500"}`}>
-                          Selects the scroll size as a percentage of the screen height when "turning pages".
-                        </p>
-                        <div class="flex flew-row mt-1 items-center w-full">
-                          <input type="range" min="5" max="100" step="1" disabled={smartScroll()} value={scrollValue()} onInput={(e) => setScrollValue(parseInt(e.target.value, 10))} onChange={handleScrollSizeChange} class="w-full accent-blue-500"/>
-                          <div class={`w-10 ml-3 text-sm text-right ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>{scrollValue()}%</div>
-                        </div>
-                      </form>
-                    </div>
+                      <div class="mt-4 flex flew-row">
+                        <label class={`block text-sm font-medium leading-6 ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>Scroll size</label>
+                      </div>
+                      <p class={`text-sm ${smartScroll() ? "text-gray-400" : "text-gray-500"}`}>
+                        Selects the scroll size as a percentage of the screen height when "turning pages".
+                      </p>
+                      <div class="flex flew-row mt-1 items-center w-full">
+                        <input type="range" min="5" max="100" step="1" disabled={smartScroll()} value={scrollValue()} onInput={(e) => setScrollValue(parseInt(e.target.value, 10))} onChange={handleScrollSizeChange} class="w-full accent-blue-500"/>
+                        <div class={`w-10 ml-3 text-sm text-right ${smartScroll() ? "text-gray-400" : "text-gray-900"}`}>{scrollValue()}%</div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex justify-end">
-                <button type="button" class={`inline-flex w-full justify-center bg-white text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto mb-3 sm:mb-0`} onClick={props.onClear}>Clear</button>
-                <button type="button" class={`${props.isConnected ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"} inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`} onClick={props.onClose}>Okay</button>
-              </div>
+              {/*<div class="bg-gray-50 px-4 py-3 sm:flex justify-end">*/}
+              {/*  <button type="button" class={`inline-flex w-full justify-center bg-white text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto mb-3 sm:mb-0`} onClick={props.onClear}>Clear</button>*/}
+              {/*  <button type="button" class={`${props.isConnected ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"} inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`} onClick={props.onClose}>Okay</button>*/}
+              {/*</div>*/}
             </div>
           </div>
         </div>

@@ -44,7 +44,8 @@ export function cleanMei(meiString: string): string {
 function removeEmptyStaffGrps(element: Element) {
   const staffGrps = select(`.//*[local-name()="staffGrp"]`, element) as Element[];
   staffGrps.forEach(staffGrp => {
-    if (!hasElementChildren(staffGrp)) {
+    const staffDefs = select(`.//*[local-name()="staffDef"]`, staffGrp) as Element[];
+    if (staffDefs.length === 0) {
       staffGrp.parentNode!.removeChild(staffGrp);
     } else {
       removeEmptyStaffGrps(staffGrp);

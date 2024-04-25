@@ -85,10 +85,10 @@ function SettingsModal(props) {
                 <div class="grow">
                   FlowScore
                 </div>
-                <button type="button" class={`inline-flex flex flex-row items-center justify-center bg-white hover:bg-gray-100 text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm ml-3 w-auto`} onClick={props.onClear}>
-                  <svg class="h-5 w-5 fill-gray-900 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M502.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128-15.8-15.8c-15.2-15.2-38.5-18.4-57.3-8l-32.5 18L380.4 288.1l18-32.5c10.4-18.7 7.1-42.1-8-57.3l-15.8-15.8 128-128c12.5-12.5 12.5-32.8 0-45.3zM187.5 151.8L16.4 246.9C6.3 252.5 0 263.2 0 274.8c0 8.5 3.4 16.6 9.3 22.6l43.2 43.2c2.1 2.1 5.3 2.9 8.2 1.9l52.1-17.4c6.3-2.1 12.2 3.9 10.1 10.1l-17.4 52.1c-1 2.9-.2 6 1.9 8.2L214.7 502.7c6 6 14.1 9.3 22.6 9.3c11.6 0 22.3-6.3 27.9-16.4l95.1-171.1L187.5 151.8z"/></svg>
-                  Clear
-                </button>
+                {/*<button type="button" class={`inline-flex flex flex-row items-center justify-center bg-white hover:bg-gray-100 text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm ml-3 w-auto`} onClick={props.onClear}>*/}
+                {/*  <svg class="h-5 w-5 fill-gray-900 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M502.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128-15.8-15.8c-15.2-15.2-38.5-18.4-57.3-8l-32.5 18L380.4 288.1l18-32.5c10.4-18.7 7.1-42.1-8-57.3l-15.8-15.8 128-128c12.5-12.5 12.5-32.8 0-45.3zM187.5 151.8L16.4 246.9C6.3 252.5 0 263.2 0 274.8c0 8.5 3.4 16.6 9.3 22.6l43.2 43.2c2.1 2.1 5.3 2.9 8.2 1.9l52.1-17.4c6.3-2.1 12.2 3.9 10.1 10.1l-17.4 52.1c-1 2.9-.2 6 1.9 8.2L214.7 502.7c6 6 14.1 9.3 22.6 9.3c11.6 0 22.3-6.3 27.9-16.4l95.1-171.1L187.5 151.8z"/></svg>*/}
+                {/*  Clear*/}
+                {/*</button>*/}
               </div>
               <div class="bg-white px-4 pb-4 pt-3 sm:pb-4">
                 <div class="sm:flex sm:items-start">
@@ -165,10 +165,10 @@ function SettingsModal(props) {
                   </div>
                 </div>
               </div>
-              {/*<div class="bg-gray-50 px-4 py-3 sm:flex justify-end">*/}
-              {/*  <button type="button" class={`inline-flex w-full justify-center bg-white text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto mb-3 sm:mb-0`} onClick={props.onClear}>Clear</button>*/}
-              {/*  <button type="button" class={`${props.isConnected ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"} inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`} onClick={props.onClose}>Okay</button>*/}
-              {/*</div>*/}
+              <div class="bg-gray-50 px-4 py-3 sm:flex justify-end">
+                <button type="button" class={`inline-flex w-full justify-center bg-white text-gray-900 ring-gray-300 ring-1 ring-inset rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto mb-3 sm:mb-0`} onClick={props.onClear}>Clear</button>
+                <button type="button" class={`${props.isConnected ? "bg-blue-500 hover:bg-blue-600" : "bg-red-500 hover:bg-red-600"} inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`} onClick={props.onClose}>Okay</button>
+              </div>
             </div>
           </div>
         </div>

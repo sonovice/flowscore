@@ -153,6 +153,7 @@ export function useScoreProvider(
       scale,
       systemMaxPerPage: 1,
       condense: 'none',
+      mdivAll: true,
     };
 
     // Post a message to the Verovio worker to render the score

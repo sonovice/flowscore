@@ -3,6 +3,10 @@ FlowScore is a web-based score viewer app that enables real-time reception, rend
 
 ![Screenshot](.github/screenshot.png)
 
+## Contributors
+
+- Ideator and Conceptual Advisor: [Prof. Dr. Axel Berndt](https://github.com/axelberndt)
+- Lead Developer and Project Author: [Simon Waloschek](https://github.com/sonovice)
 
 ## 💡 Concept
 This project aims to provide a streaming-based solution, divided into three main components: Provider, Server, and Client:

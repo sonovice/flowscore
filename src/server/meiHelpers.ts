@@ -98,8 +98,17 @@ export function filterStaves(meiString: string, staves: string): String {
   // Remove all elements with @staff attributes that do not match the desired staves
   (select(`//*[@staff]`, mei) as Element[]).forEach(elem => {
     const n = elem.getAttribute('staff');
-    if (n && !stavesSplitted.includes(n)) {
-      elem.parentNode!.removeChild(elem)
+    if (n) {
+      let isIncluded = false;
+      const ns = n.split(' ');
+      ns.forEach(n => {
+        if (stavesSplitted.includes(n)) {
+          isIncluded = true;
+        }
+      });
+      if (!isIncluded) {
+        elem.parentNode!.removeChild(elem)
+      }
     }
   });
 

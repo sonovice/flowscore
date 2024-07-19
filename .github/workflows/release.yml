@@ -40,56 +40,34 @@ jobs:
   build-and-release:
     needs: check-version
     if: needs.check-version.outputs.version_changed == 'true'
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            platform: windows
-            arch: x64
-            executable: FlowScoreApp.exe
-            extension: .exe
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
-            executable: FlowScoreApp
-            extension: ""
-          - os: ubuntu-latest
-            platform: linux
-            arch: arm64
-            executable: FlowScoreApp
-            extension: ""
-          - os: macos-latest
-            platform: mac
-            arch: x64
-            executable: FlowScoreApp
-            extension: ""
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Bun on Linux/macOS
-        if: matrix.os != 'windows-latest'
+      - name: Install Bun
         run: |
-          curl https://bun.sh/install | bash
+          curl https://bun.sh/install | bash -s "bun-v1.1.20"
           echo "BUN_BIN=$(echo $HOME/.bun/bin)" >> $GITHUB_ENV
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-      - name: Install Bun on Windows
-        if: matrix.os == 'windows-latest'
+      - name: Run setup
         run: |
-          powershell -c "irm bun.sh/install.ps1 | iex"
-          echo "C:\Users\runneradmin\.bun\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          bun run setup
 
       - name: Run build
         run: |
-          bun run setup
-          bun run build
+          bun build --compile --target=bun-mac-x64 --outfile FlowScoreApp-mac-x64 src/index.ts
+          bun build --compile --target=bun-mac-arm64 --outfile FlowScoreApp-mac-arm64 src/index.ts
+          bun build --compile --target=bun-linux-x64 --outfile FlowScoreApp-linux-x64 src/index.ts
+          bun build --compile --target=bun-linux-amd64 --outfile FlowScoreApp-linux-arm64 src/index.ts
+          bun build --compile --target=bun-windows-x64 --outfile FlowScoreApp-windows-x64.exe src/index.ts
+
 
       - name: Rename and upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: "FlowScore-${{ matrix.platform }}-${{ matrix.arch }}-v${{ needs.check-version.outputs.new_version }}${{ matrix.extension }}"
-          path: src/${{ matrix.executable }}
+          name: FlowScore-v${{ needs.check-version.outputs.new_version }}
+          path: FlowScoreApp-*
           if-no-files-found: error
           retention-days: 1
 
@@ -103,22 +81,8 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          path: ~/artifacts
-
-      - name: Rename and move artifacts
-        run: |
-          mkdir -p /home/runner/release
-          for dir in ~/artifacts/*; do
-            if [ -d "$dir" ]; then
-              base=$(basename "$dir")
-              file=$(ls "$dir")
-              mv "$dir/$file" "/home/runner/release/${base}"
-            fi
-          done
-        shell: bash
-
-      - name: List artifacts
-        run: ls -lR ~/release
+          name: FlowScore-v${{ needs.check-version.outputs.new_version }}
+          path: release
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -127,6 +91,6 @@ jobs:
           name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: /home/runner/release/*
+          files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

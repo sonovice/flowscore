@@ -53,6 +53,9 @@ jobs:
       - name: Run setup
         run: |
           bun run setup
+          cd src/ui
+          bun run build
+          cd ../..
 
       - name: Run build
         run: |

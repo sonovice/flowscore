@@ -40,27 +40,47 @@ export function compareNumbers(a: string, b: string): number {
 
 /**
  * Retrieves the local IP address of the machine.
- * It skips virtual interfaces and looks for an IPv4 address that is not internal.
+ * It prioritizes non-virtual interfaces and looks for an IPv4 address that is not internal.
  *
  * @returns {string} - The local IP address.
  * @throws {Error} - If unable to retrieve the local network IP address.
  */
 export function getLocalIp(): string {
   const netInterfaces = os.networkInterfaces();
+  const candidates: string[] = [];
+
   for (const netInterfaceName in netInterfaces) {
-    // Skip virtual interfaces
-    if (netInterfaceName.includes('WSL') || netInterfaceName.includes('Virtual') || netInterfaceName.includes('Loopback') || netInterfaceName.includes('VPN') || netInterfaceName.includes('vEthernet')) {
-      continue;
-    }
     const netInterface = netInterfaces[netInterfaceName];
     if (netInterface) {
       for (const iface of netInterface) {
-        // Look for IPv4 and only internal address
+        // Look for IPv4 and non-internal addresses
         if (iface.family === 'IPv4' && !iface.internal) {
-          return iface.address;
+          // Skip virtual interfaces
+          if (netInterfaceName.includes('WSL') || 
+              netInterfaceName.includes('Virtual') || 
+              netInterfaceName.includes('Loopback') || 
+              netInterfaceName.includes('VPN') || 
+              netInterfaceName.includes('vEthernet')) {
+            continue;
+          }
+          
+          // Prioritize addresses in common local network ranges
+          if (iface.address.startsWith('192.168.') || 
+              iface.address.startsWith('10.') || 
+              iface.address.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+            return iface.address;
+          }
+          
+          candidates.push(iface.address);
         }
       }
     }
   }
+
+  // If we haven't returned yet, choose the first candidate (if any)
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+
   throw new Error('Unable to retrieve local network IP address.');
 }

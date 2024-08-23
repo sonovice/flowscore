@@ -98,7 +98,7 @@ export function useScoreProvider(
 
           // Modify the labels of the MEI data
           mei = modifyLabels(mei, svgStrings().length, selectedStavesString === 'all');
-
+          console.log(mei);
           // Post a message to the Verovio worker to load the data
           vrvWorker.postMessage({cmd: 'loadData', param: mei});
         }

@@ -4,7 +4,7 @@
     "name": "Simon Waloschek",
     "email": "waloschek@pm.me"
   },
-  "version": "1.4.5",
+  "version": "1.4.6",
   "module": "index.ts",
   "type": "module",
   "scripts": {

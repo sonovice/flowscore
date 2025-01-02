@@ -1,9 +1,10 @@
 import {createEffect, Accessor, Setter} from 'solid-js';
 import pako, {Data} from 'pako';
 import {modifyLabels} from "../utils/meiHelpers.ts";
-import {VerovioOptions} from "verovio";
 import VirtualScroller from '../externals/virtual-scroller-1.12.4/DOM/VirtualScroller';
 import {useSettings} from "../contexts/SettingsContext.tsx";
+import {VerovioOptions} from "verovio";
+import {verovio} from "../workers/ThreadedVerovio";
 
 /**
  * Hook to handle the score provider.
@@ -27,19 +28,16 @@ export function useScoreProvider(
     scoreScale: [scoreScale]
   } = useSettings();
 
-  // Initialize the Verovio worker
-  const vrvWorker = new Worker(
-    new URL('../workers/verovioWorker.ts', import.meta.url),
-    {
-      type: 'module',
-    }
-  );
 
   // Initialize the WebSocket
   let ws: WebSocket | null = null;
 
   // Keep track of the previously selected staves
   let previousStaves: string = selectedStaves().join(',');
+
+  // Renderings are queued to avoid race conditions
+  let currentRenderPromise: Promise<void> | null = null;
+  let renderQueue: string[] = [];
 
   // Connect to the WebSocket
   connectWebSocket();
@@ -82,29 +80,23 @@ export function useScoreProvider(
      * @param {MessageEvent} event - The message event.
      */
     ws.onmessage = (event) => {
-      // Create a new FileReader to read the data from the event
       const reader = new FileReader();
-
-      /**
-       * Event handler for FileReader's onload event.
-       * This event is triggered when the reading operation is successfully completed.
-       *
-       * @param {ProgressEvent<FileReader>} e - The progress event.
-       */
-      reader.onload = (e) => {
+      
+      reader.onload = async (e) => {
         if (e.target !== null) {
-          // Inflate (decompress) the data from the event using pako
-          let mei = pako.inflate(e.target.result as Data, {to: "string"});
-
-          // Modify the labels of the MEI data
-          mei = modifyLabels(mei, svgStrings().length, selectedStavesString === 'all');
-          console.log(mei);
-          // Post a message to the Verovio worker to load the data
-          vrvWorker.postMessage({cmd: 'loadData', param: mei});
+          const mei = pako.inflate(e.target.result as Data, {to: "string"});
+          const modifiedMei = modifyLabels(mei, svgStrings().length, selectedStavesString === 'all');
+          
+          // Add MEI to the queue
+          renderQueue.push(modifiedMei);
+          
+          // If no render is running, start a new one
+          if (!currentRenderPromise) {
+            processRenderQueue();
+          }
         }
       };
 
-      // Start reading the data from the event as an ArrayBuffer
       reader.readAsArrayBuffer(event.data);
     };
 
@@ -124,10 +116,19 @@ export function useScoreProvider(
     };
   }
 
+  async function processRenderQueue() {
+    while (renderQueue.length > 0) {
+      const mei = renderQueue.shift()!;
+      currentRenderPromise = renderScore(mei);
+      await currentRenderPromise;
+    }
+    currentRenderPromise = null;
+  }
+
   /**
    * Render the score.
    */
-  function renderScore() {
+  async function renderScore(mei: string) {
     // Get the scale, width, height, and margin
     const scale = scoreScale();
     const width = containerRef.clientWidth;
@@ -156,22 +157,18 @@ export function useScoreProvider(
       mdivAll: true,
     };
 
-    // Post a message to the Verovio worker to render the score
-    vrvWorker.postMessage({
-      cmd: "renderToSVG",
-      param: options
-    });
-  }
+    await verovio.loadData(mei);
+    await verovio.setOptions(options);
+    await verovio.redoLayout();
 
-  createEffect(() => {
-    vrvWorker.onmessage = (event) => {
-      if (event.data.cmd === 'renderToSVG') {
-        setSvgStrings([...svgStrings(), ...event.data.result]);
-      } else if (event.data.cmd === 'loadData') {
-        renderScore();
-      }
-    };
-  });
+    const num_pages = await verovio.getPageCount();
+    const svgs: string[] = [];
+    for (let i = 1; i <= num_pages; i++) {
+      const svg = await verovio.renderToSVG(i);
+      svgs.push(svg);
+    }
+    setSvgStrings([...svgStrings(), ...svgs]);
+  }
 
   createEffect(() => {
     virtualScroller.setItems(svgStrings());

@@ -4,7 +4,7 @@
     "name": "Simon Waloschek",
     "email": "waloschek@pm.me"
   },
-  "version": "1.4.3",
+  "version": "1.4.4",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -17,18 +17,18 @@
     "@types/pako": "^2.0.3",
     "@types/xmldom": "^0.1.34",
     "bun-types": "latest",
-    "vite": "^5.0.10"
+    "vite": "^6.0.6"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@elysiajs/cors": "^0.7.2",
-    "elysia": "^0.7.30",
-    "minify-xml": "^4.3.0",
+    "@elysiajs/cors": "^1.2.0",
+    "elysia": "^1.2.9",
+    "minify-xml": "^4.5.2",
     "pako": "^2.1.0",
     "xmldom": "^0.6.0",
     "xpath": "^0.0.34",
-    "request-animation-frame-timeout": "^1.0.0"
+    "request-animation-frame-timeout": "^2.0.4"
   }
 }

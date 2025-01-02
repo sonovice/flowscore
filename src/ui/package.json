@@ -16,18 +16,18 @@
     "js-cookie": "^3.0.5",
     "pako": "^2.1.0",
     "robust-websocket": "^1.0.0",
-    "solid-js": "^1.8.7",
-    "verovio": "^4.1.0"
+    "solid-js": "^1.9.3",
+    "verovio": "^4.5.1"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "@types/pako": "^2.0.3",
     "@types/verovio": "^3.13.4",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.3",
-    "vite": "^5.2.7",
-    "vite-plugin-solid": "^2.8.0"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "vite-plugin-solid": "^2.11.0"
   }
 }

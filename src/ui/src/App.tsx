@@ -83,16 +83,17 @@ function App() {
       </Show>
 
       {/* Render the score viewer */}
-      <div ref={containerRef!} class="h-screen overflow-y-scroll w-screen">
-        <div class={showSeparator() ? "bg-blue-100" : ""} ref={viewerRef!}/>
+      <div ref={el => containerRef = el} class="h-screen overflow-y-scroll w-screen">
+        <div class={showSeparator() ? "bg-blue-100" : ""} ref={el => viewerRef = el}/>
       </div>
 
       {/* Render the settings button */}
       <Show when={!isWebSocketConnected()}>
         <div class="animate-ping fixed bottom-4 right-4 inline-flex h-12 w-12 rounded-full bg-red-500 opacity-75"></div>
       </Show>
-      <button class={`${isWebSocketConnected() ? "bg-blue-500 opacity-50" : "bg-red-500 opacity-100"} hover:opacity-100 fixed bottom-4 right-4 h-12 w-12 flex items-center justify-center  text-white rounded-full shadow-lg`}
-              onClick={() => setShowSettings(!showSettings())}>
+      <button
+        class={`${isWebSocketConnected() ? "bg-blue-500 opacity-50" : "bg-red-500 opacity-100"} hover:opacity-100 fixed bottom-4 right-4 h-12 w-12 flex items-center justify-center  text-white rounded-full shadow-lg`}
+        onClick={() => setShowSettings(!showSettings())}>
         <div class="w-7 h-7 rounded-full">
           <svg class="" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path

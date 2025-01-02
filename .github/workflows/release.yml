@@ -46,7 +46,7 @@ jobs:
 
       - name: Install Bun
         run: |
-          curl https://bun.sh/install | bash -s "bun-v1.1.20"
+          curl https://bun.sh/install | bash -s "bun-v1.1.42"
           echo "BUN_BIN=$(echo $HOME/.bun/bin)" >> $GITHUB_ENV
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
 

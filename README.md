@@ -15,6 +15,14 @@ This project aims to provide a streaming-based solution, divided into three main
 - Server: Receives musical material from the Music Provider, generates voice parts, and sends them to the clients.
 - Client: The client application is accessed by musicians on their devices via a browser. It offers various settings and the display of musical scores.
 
+## Documentation
+
+Detailed documentation is available for different user groups:
+
+-   **[Developer Documentation](docs/DEVELOPERS.md):** For those contributing to the FlowScore codebase.
+-   **[Operator Guide](docs/OPERATORS.md):** For individuals running and managing the FlowScore server.
+-   **[Musician/User Guide](docs/MUSICIANS.md):** For end-users viewing scores in their browser.
+
 ## 🏎 Run server
 To run the server, simply download and execute the binary file for your operating system from the [Releases](https://github.com/sonovice/flowscore/releases) page. The server will start on port 8765 by default.
 

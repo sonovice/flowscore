@@ -12,29 +12,54 @@ jobs:
       version_changed: ${{ steps.version_changed.outputs.changed }}
       new_version: ${{ steps.get_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      # Use checkout v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2 # Fetch the last two commits
+
+      # Install jq (needed for parsing JSON)
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Get latest release version
         id: get_latest_release
         run: |
-          LATEST_RELEASE_VERSION=$(curl --silent "https://api.github.com/repos/sonovice/flowscore/releases/latest" | jq -r .tag_name | tr -d 'v')
-          echo "::set-output name=version::${LATEST_RELEASE_VERSION}"
+          # Use GITHUB_OUTPUT and handle no prior releases
+          LATEST_RELEASE_TAG=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+          if [ "$LATEST_RELEASE_TAG" == "null" ] || [ -z "$LATEST_RELEASE_TAG" ]; then
+            LATEST_RELEASE_VERSION="0.0.0" # Assign a baseline if no releases exist
+            echo "No previous releases found. Setting baseline version to 0.0.0"
+          else
+            LATEST_RELEASE_VERSION=$(echo "$LATEST_RELEASE_TAG" | sed 's/^v//') # Remove 'v' prefix
+          fi
+          echo "Latest release version found: $LATEST_RELEASE_VERSION"
+          echo "version=${LATEST_RELEASE_VERSION}" >> $GITHUB_OUTPUT
         shell: bash
+
       - name: Check if version changed
         id: version_changed
         run: |
+          # Use GITHUB_OUTPUT
           CURRENT_VERSION=$(jq -r '.version' package.json)
+          echo "Current package.json version: $CURRENT_VERSION"
+          echo "Latest release version: ${{ steps.get_latest_release.outputs.version }}"
           if [ "$CURRENT_VERSION" != "${{ steps.get_latest_release.outputs.version }}" ]; then
-            echo "::set-output name=changed::true"
+            echo "Version changed: true"
+            echo "changed=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=changed::false"
+            echo "Version changed: false"
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
         shell: bash
-      - name: Get current version
+
+      - name: Get current version from package.json
         id: get_version
         if: steps.version_changed.outputs.changed == 'true'
-        run: echo "::set-output name=version::$(jq -r '.version' package.json)"
+        run: |
+          # Use GITHUB_OUTPUT
+          VERSION=$(jq -r '.version' package.json)
+          echo "New version identified: $VERSION"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
         shell: bash
 
   build-and-release:
@@ -42,50 +67,66 @@ jobs:
     if: needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Use checkout v4
+      - uses: actions/checkout@v4
 
+      # Use setup-bun action v1
       - name: Install Bun
-        run: |
-          curl https://bun.sh/install | bash -s "bun-v1.2.8"
-          echo "BUN_BIN=$(echo $HOME/.bun/bin)" >> $GITHUB_ENV
-          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.2.8
 
-      - name: Run setup
+      # Assuming 'bun run setup' primarily installs dependencies.
+      # If it does more, keep 'bun run setup'.
+      - name: Install root dependencies
+        run: bun install
+
+      - name: Build UI
+        working-directory: ./src/ui # Run commands within this directory
         run: |
-          bun run setup
-          cd src/ui
+          bun install
           bun run build
-          cd ../..
 
-      - name: Run build
+      - name: Run build for executables
         run: |
+          # Corrected target for linux-arm64
           bun build --compile --target=bun-mac-x64 --outfile FlowScoreApp-mac-x64 src/index.ts
           bun build --compile --target=bun-mac-arm64 --outfile FlowScoreApp-mac-arm64 src/index.ts
           bun build --compile --target=bun-linux-x64 --outfile FlowScoreApp-linux-x64 src/index.ts
-          bun build --compile --target=bun-linux-amd64 --outfile FlowScoreApp-linux-arm64 src/index.ts
+          bun build --compile --target=bun-linux-arm64 --outfile FlowScoreApp-linux-arm64 src/index.ts
           bun build --compile --target=bun-windows-x64 --outfile FlowScoreApp-windows-x64.exe src/index.ts
 
-      - name: Rename and upload artifact
-        uses: actions/upload-artifact@v3
+      # Use upload-artifact v4
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
+          # Name uses the output from the check-version job
           name: FlowScore-v${{ needs.check-version.outputs.new_version }}
+          # Path uses the same wildcard pattern
           path: FlowScoreApp-*
+          # Keep error behavior if no files are found
           if-no-files-found: error
+          # Keep retention days (or remove to use default repo settings)
           retention-days: 1
 
   create-release:
     needs: [check-version, build-and-release]
+    # Condition remains the same
     if: needs.build-and-release.result == 'success' && needs.check-version.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Permission remains necessary
     steps:
+      # Use download-artifact v4
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
+          # Name matches the uploaded artifact name
           name: FlowScore-v${{ needs.check-version.outputs.new_version }}
+          # Download to the 'release' directory
           path: release
 
+      # Keep softprops action (v2 is current and works well)
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -93,6 +134,6 @@ jobs:
           name: "FlowScore v${{ needs.check-version.outputs.new_version }}"
           draft: false
           prerelease: false
-          files: release/*
+          files: release/* # Upload all files from the download directory
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Env var remains the same

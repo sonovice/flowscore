@@ -1,4 +1,4 @@
-import {Accessor, Component, createContext, createEffect, createSignal, Setter, useContext} from 'solid-js';
+import { Accessor, Component, createContext, createEffect, createSignal, Setter, useContext } from 'solid-js';
 import Cookies from 'js-cookie';
 
 /**
@@ -12,6 +12,8 @@ export interface UserSettings {
   scrollPercentage: [Accessor<number>, Setter<number>];
   showSeparator: [Accessor<boolean>, Setter<boolean>];
   smoothScrolling: [Accessor<boolean>, Setter<boolean>];
+  lastMei: [Accessor<string | null>, Setter<string | null>];
+  meiSnapshots: [Accessor<string[]>, Setter<string[]>];
 }
 
 // Create a context for user settings
@@ -37,6 +39,8 @@ export const SettingsProvider: Component<{ children: any }> = (props) => {
   const [scrollPercentage, setScrollPercentage] = createSignal<number>(parseInt(Cookies.get('scrollPercentage') || "75"));
   const [showSeparator, setShowSeparator] = createSignal<boolean>(Cookies.get('showSeparator') === 'true');
   const [smoothScrolling, setSmoothScrolling] = createSignal<boolean>(Cookies.get('smoothScrolling') === 'true');
+  const [lastMei, setLastMei] = createSignal<string | null>(null);
+  const [meiSnapshots, setMeiSnapshots] = createSignal<string[]>([]);
 
   // Create effects to update the cookies and URL when the settings change
   createEffect(() => {
@@ -61,7 +65,9 @@ export const SettingsProvider: Component<{ children: any }> = (props) => {
       smartScroll: [smartScroll, setSmartScroll],
       scrollPercentage: [scrollPercentage, setScrollPercentage],
       showSeparator: [showSeparator, setShowSeparator],
-      smoothScrolling: [smoothScrolling, setSmoothScrolling]
+      smoothScrolling: [smoothScrolling, setSmoothScrolling],
+      lastMei: [lastMei, setLastMei],
+      meiSnapshots: [meiSnapshots, setMeiSnapshots]
     }}>
       {props.children}
     </SettingsContext.Provider>

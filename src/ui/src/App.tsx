@@ -8,6 +8,7 @@ import { useScoreProvider } from "./hooks/useScoreProvider.ts";
 import { useSettings } from "./contexts/SettingsContext.tsx";
 
 import SettingsModal from "./components/SettingsModal.tsx";
+import { exportScoreToPdf, exportSnapshotsToPdf } from "./utils/exportPdf";
 
 /**
  * Main application component.
@@ -18,7 +19,9 @@ function App() {
   // Use settings from the SettingsContext
   const {
     showSeparator: [showSeparator],
-    colorizeBottomSystem: [colorizeBottomSystem]
+    colorizeBottomSystem: [colorizeBottomSystem],
+    lastMei: [lastMei, setLastMei],
+    meiSnapshots: [meiSnapshots, setMeiSnapshots]
   } = useSettings();
 
   // Create signals for managing state
@@ -27,6 +30,7 @@ function App() {
   const [isWebSocketConnected, setIsWebSocketConnected] = createSignal(false);
   const [isScrolling, setIsScrolling] = createSignal(false);
   const [isScrolledToBottom, setIsScrolledToBottom] = createSignal(true);
+  const [isExportingPDF, setIsExportingPDF] = createSignal(false);
 
   // References to DOM elements and external objects
   let containerRef: HTMLDivElement;
@@ -53,8 +57,9 @@ function App() {
     try {
       const noSleep = new NoSleep();
       noSleep.enable();
-    } catch (err: any) {
-      console.log(`${err.name}, ${err.message}`);
+    } catch (err: unknown) {
+      const e = err as { name?: string; message?: string };
+      console.log(`${e?.name ?? 'Error'}, ${e?.message ?? String(err)}`);
     }
   }
 
@@ -65,6 +70,30 @@ function App() {
    */
   function handleClearScore() {
     setSvgStrings([]);
+    setLastMei(null);
+    setMeiSnapshots([]);
+  }
+
+  async function handleExportPDF() {
+    try {
+      setIsExportingPDF(true);
+      const snapshots = meiSnapshots();
+      if (snapshots && snapshots.length > 0) {
+        await exportSnapshotsToPdf(snapshots, 'flowscore-export.pdf');
+      } else {
+        const mei = lastMei();
+        if (!mei) {
+          console.warn("No MEI available to export.");
+          return;
+        }
+        await exportScoreToPdf(mei, 'flowscore-export.pdf');
+      }
+    } catch (err: unknown) {
+      const e = err as { message?: string };
+      console.error('PDF export failed:', e?.message ?? String(err));
+    } finally {
+      setIsExportingPDF(false);
+    }
   }
 
   /**
@@ -109,7 +138,7 @@ function App() {
     <>
       {/* Render the settings modal */}
       <Show when={showSettings()}>
-        <SettingsModal onClose={handleCloseSettingsModal} onClear={handleClearScore} isConnected={isWebSocketConnected()} />
+        <SettingsModal onClose={handleCloseSettingsModal} onClear={handleClearScore} onExport={handleExportPDF} isConnected={isWebSocketConnected()} isExporting={isExportingPDF()} />
       </Show>
 
       {/* Render the score viewer */}

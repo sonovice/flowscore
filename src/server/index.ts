@@ -9,6 +9,7 @@ import {
 } from "./handlers/websocket.ts";
 import { app } from "./globals.ts";
 import { COLOR_GREEN, COLOR_RESET } from "../utils.ts";
+import qrcode from "terminal-qr";
 
 /**
  * Starts the server on all available network interfaces and displays connection info grouped by device.
@@ -61,6 +62,18 @@ export function serve(
 				`   • Provider: ws://${device.address}:${port}/ws?type=provider`,
 			);
 			console.log(`   • Clients:  http://${device.address}:${port}/`);
+			qrcode.generate(
+				`http://${device.address}:${port}/`,
+				{ small: true },
+				(qr) => {
+					// Indent each line of `qr` by 4 spaces
+					const indentedQr = qr
+						.split("\n")
+						.map((line) => "               " + line)
+						.join("\n");
+					console.log(indentedQr);
+				},
+			);
 			console.log("");
 		});
 	}

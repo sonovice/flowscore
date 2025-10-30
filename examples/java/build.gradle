@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'org.example'
@@ -9,6 +10,13 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClass = 'org.example.DiscoverAndSend'
+    applicationDefaultJvmArgs = ['--enable-native-access=ALL-UNNAMED']
+}
+
 dependencies {
-    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.6'
+    implementation 'org.jmdns:jmdns:3.5.10'
+    implementation 'org.slf4j:slf4j-nop:2.0.13'
 }

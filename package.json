@@ -4,7 +4,7 @@
     "name": "Simon Waloschek",
     "email": "waloschek@pm.me"
   },
-  "version": "1.6.1",
+  "version": "1.7.0",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
+    "bonjour-service": "^1.2.1",
     "elysia": "^1.4.13",
     "minify-xml": "^4.5.2",
     "pako": "^2.1.0",

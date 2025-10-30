@@ -31,4 +31,5 @@ let port =
 		: DEFAULT_PORT;
 
 // Start the server
-serve(networkDevices, port);
+const disableMdns = (process.env.DISABLE_MDNS || "").toLowerCase() === "1" || (process.env.DISABLE_MDNS || "").toLowerCase() === "true";
+serve(networkDevices, port, disableMdns);

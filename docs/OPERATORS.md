@@ -48,17 +48,32 @@ The FlowScore server acts as a central hub that receives a full musical score in
     bun src/index.ts --port 9000
     ```
 
+*   **Autodiscovery:** By default, the server advertises itself on the local network via mDNS/DNS‑SD (Bonjour/Zeroconf) so provider apps can discover it automatically without needing to know the IP address or port. The server publishes a service of type `_flowscore._tcp.local.` with a unique name that includes a random suffix (e.g., `FlowScore Broker (hostname:8765-XXXXXX)`). To disable advertising, set `DISABLE_MDNS=1` or `DISABLE_MDNS=true` in the environment before starting the server:
+    ```bash
+    DISABLE_MDNS=1 ./FlowScoreApp
+    ```
+
 ## Connecting Provider and Clients
 
-Once the server is running, it will print the necessary connection details:
+Once the server is running, it will print the necessary connection details. When autodiscovery is enabled, the output will look like this:
 
 ```
-🚀 Server is running.
-Connect provider to "ws://[server-ip]:[port]/ws?type=provider"
-Connect clients to "http://[server-ip]:[port]/"
+🚀 FlowScore Server is running on all interfaces.
+Discoverable as: FlowScore Broker (hostname:8765-XXXXXX)
+
+Available on 2 network device(s):
+
+1. en0 (192.168.1.100)
+   • Provider: ws://192.168.1.100:8765/ws?type=provider
+   • Clients:  http://192.168.1.100:8765/
+   [QR code displayed]
 ```
 
-*   **Provider:** Configure your MEI sending application to connect to the WebSocket URL shown (e.g., `ws://192.168.1.100:8765/ws?type=provider`). The server only accepts *one* provider connection at a time. If a provider is already connected, subsequent attempts will be rejected until the first one disconnects.
+*   **Provider:** You can connect your MEI sending application to the server in two ways:
+    1. **Automatic discovery (recommended)**: Use mDNS/DNS‑SD to browse for `_flowscore._tcp.local.` services. Provider applications can discover the broker automatically and connect without needing to know the IP address. See the example implementations in `examples/python/discover_and_send.py` and `examples/java/src/main/java/org/example/DiscoverAndSend.java`.
+    2. **Manual connection**: Connect directly to the WebSocket URL shown in the server output (e.g., `ws://192.168.1.100:8765/ws?type=provider`).
+    
+    **Important**: The server only accepts *one* provider connection at a time. If a provider is already connected, subsequent attempts will be rejected until the first one disconnects.
 *   **Clients (Musicians):** Instruct users to open the HTTP URL in their web browsers (e.g., `http://192.168.1.100:8765/`).
     *   To view specific staves, clients need to append `?staves=[numbers]` to the URL (e.g., `http://192.168.1.100:8765/?staves=1,4`). You will need to inform the musicians which stave number corresponds to which instrument/part based on the MEI data being sent by the provider.
 

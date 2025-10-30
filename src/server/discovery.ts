@@ -1,9 +1,17 @@
 import { randomBytes } from "node:crypto";
 import os from "node:os";
-import Bonjour from "bonjour-service";
+import { createRequire } from "node:module";
 
-let bonjourInstance: Bonjour | null = null;
-let publishedService: ReturnType<Bonjour["publish"]> | null = null;
+// Use createRequire for CommonJS module compatibility with Bun
+const require = createRequire(import.meta.url);
+const BonjourModule = require("bonjour-service");
+
+// bonjour-service exports: { Bonjour, Service, Browser, default }
+// Use default export or Bonjour property (both are the constructor)
+const Bonjour = BonjourModule.default || BonjourModule.Bonjour || BonjourModule;
+
+let bonjourInstance: any = null;
+let publishedService: any = null;
 
 /**
  * Generate a random alphanumeric string.

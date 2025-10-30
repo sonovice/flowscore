@@ -74,7 +74,7 @@ jobs:
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: 1.2.8
+          bun-version: 1.3.1.
 
       # Assuming 'bun run setup' primarily installs dependencies.
       # If it does more, keep 'bun run setup'.

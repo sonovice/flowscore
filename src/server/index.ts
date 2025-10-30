@@ -1,5 +1,8 @@
 import { cors } from "@elysiajs/cors";
 import Elysia from "elysia";
+import qrcode from "terminal-qr";
+import { COLOR_GREEN, COLOR_RESET } from "../utils.ts";
+import { app } from "./globals.ts";
 import { handle_static_files } from "./handlers/static.ts";
 import { handle_stats } from "./handlers/stats.ts";
 import {
@@ -7,9 +10,6 @@ import {
 	handle_message,
 	handle_open,
 } from "./handlers/websocket.ts";
-import { app } from "./globals.ts";
-import { COLOR_GREEN, COLOR_RESET } from "../utils.ts";
-import qrcode from "terminal-qr";
 
 /**
  * Starts the server on all available network interfaces and displays connection info grouped by device.

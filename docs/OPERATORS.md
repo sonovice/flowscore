@@ -48,40 +48,37 @@ The FlowScore server acts as a central hub that receives a full musical score in
     bun src/index.ts --port 9000
     ```
 
-*   **Autodiscovery:** By default, the server advertises itself on the local network via mDNS/DNS‑SD (Bonjour/Zeroconf) so provider apps can discover it automatically without needing to know the IP address or port. The server publishes a service of type `_flowscore._tcp.local.` with a unique name that includes a random suffix (e.g., `FlowScore Broker (hostname:8765-XXXXXX)`). To disable advertising, set `DISABLE_MDNS=1` or `DISABLE_MDNS=true` in the environment before starting the server:
-    ```bash
-    DISABLE_MDNS=1 ./FlowScoreApp
-    ```
+## Auto-Discovery (SSDP)
+
+The FlowScore server automatically advertises itself on the local network using SSDP (Simple Service Discovery Protocol). This allows providers to automatically discover and connect to the server without needing to know its IP address or port.
+
+*   **Automatic Activation:** SSDP discovery starts automatically when the server starts. You'll see a message indicating "SSDP discovery service started" in the console output.
+*   **How It Works:** The server sends periodic SSDP NOTIFY messages every 10 seconds and responds to M-SEARCH discovery requests from providers on the network.
+*   **No Configuration Required:** SSDP discovery works automatically on all available network interfaces. No additional configuration is needed.
+*   **Provider Support:** Providers can use the discovery client libraries (available in Python, Java, and TypeScript examples) to automatically find and connect to your server.
 
 ## Connecting Provider and Clients
 
-Once the server is running, it will print the necessary connection details. When autodiscovery is enabled, the output will look like this:
+Once the server is running, it will print the necessary connection details:
 
 ```
-🚀 FlowScore Server is running on all interfaces.
-Discoverable as: FlowScore Broker (hostname:8765-XXXXXX)
-
-Available on 2 network device(s):
-
-1. en0 (192.168.1.100)
-   • Provider: ws://192.168.1.100:8765/ws?type=provider
-   • Clients:  http://192.168.1.100:8765/
-   [QR code displayed]
+Server is running on all interfaces.
+Available on [N] network device(s):
+...
 ```
 
-*   **Provider:** You can connect your MEI sending application to the server in two ways:
-    1. **Automatic discovery (recommended)**: Use mDNS/DNS‑SD to browse for `_flowscore._tcp.local.` services. Provider applications can discover the broker automatically and connect without needing to know the IP address. See the example implementations in `examples/python/discover_and_send.py` and `examples/java/src/main/java/org/example/DiscoverAndSend.java`.
-    2. **Manual connection**: Connect directly to the WebSocket URL shown in the server output (e.g., `ws://192.168.1.100:8765/ws?type=provider`).
-    
-    **Important**: The server only accepts *one* provider connection at a time. If a provider is already connected, subsequent attempts will be rejected until the first one disconnects.
+*   **Provider:** Providers can connect in two ways:
+    *   **Auto-Discovery (Recommended):** Use the SSDP discovery client to automatically find the server. See the `examples/` directory for discovery examples in Python, Java, and TypeScript.
+    *   **Manual Connection:** Configure your MEI sending application to connect to the WebSocket URL shown (e.g., `ws://192.168.1.100:8765/ws?type=provider`). The server only accepts *one* provider connection at a time. If a provider is already connected, subsequent attempts will be rejected until the first one disconnects.
 *   **Clients (Musicians):** Instruct users to open the HTTP URL in their web browsers (e.g., `http://192.168.1.100:8765/`).
     *   To view specific staves, clients need to append `?staves=[numbers]` to the URL (e.g., `http://192.168.1.100:8765/?staves=1,4`). You will need to inform the musicians which stave number corresponds to which instrument/part based on the MEI data being sent by the provider.
 
-*   **Example Files:** The `examples/` directory in the project contains sample MEI files (e.g., `.mei`). These can be useful for testing the server setup or for use with a test provider application. You might also find example provider implementations (e.g., in Python or Java) within the `examples/` subdirectories, which can serve as a starting point for connecting your own MEI source.
+*   **Example Files:** The `examples/` directory in the project contains sample MEI files (e.g., `.mei`). These can be useful for testing the server setup or for use with a test provider application. You might also find example provider implementations (e.g., in Python or Java) within the `examples/` subdirectories, including examples that demonstrate auto-discovery, which can serve as a starting point for connecting your own MEI source.
 
 ## Monitoring
 
 *   **Console Logs:** The server prints logs to the console, indicating when it starts, when providers/clients connect/disconnect, when they subscribe/unsubscribe to staves, and when MEI data is received and published. These logs include timestamps and color-coding for readability.
+    *   `SSDP discovery service started`: Logged when SSDP auto-discovery is activated.
     *   `PROVIDER New MEI data`: Logged when the provider sends data.
     *   `PUBLISHED Staves "..."`: Logged when processed data is sent to clients for specific staves.
     *   `SUBSCRIBED Staves "..."`: Logged when a client connects and subscribes.

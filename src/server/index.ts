@@ -3,6 +3,7 @@ import Elysia from "elysia";
 import qrcode from "terminal-qr";
 import { COLOR_GREEN, COLOR_RESET } from "../utils.ts";
 import { app } from "./globals.ts";
+import { startDiscovery } from "./discovery.ts";
 import { handle_static_files } from "./handlers/static.ts";
 import { handle_stats } from "./handlers/stats.ts";
 import {
@@ -10,7 +11,6 @@ import {
 	handle_message,
 	handle_open,
 } from "./handlers/websocket.ts";
-import { startServiceDiscovery } from "./discovery.ts";
 
 /**
  * Starts the server on all available network interfaces and displays connection info grouped by device.
@@ -21,7 +21,6 @@ import { startServiceDiscovery } from "./discovery.ts";
 export function serve(
 	networkDevices: Array<{ interface: string; address: string }>,
 	port: number,
-	disableMdns: boolean = false,
 ) {
 	// Create a new Elysia server (HTTP and WebSocket)
 	app.value = new Elysia({
@@ -45,32 +44,17 @@ export function serve(
 		// '0.0.0.0' -> Listen on all interfaces
 		.listen({ port, hostname: "0.0.0.0" });
 
-	// Start mDNS/DNS-SD advertising unless disabled
-	const discovery = disableMdns ? undefined : startServiceDiscovery(port);
-
-	// Clean shutdown handler
-	process.on("SIGINT", async () => {
-		try {
-			await discovery?.stop();
-		} finally {
-			process.exit(0);
-		}
-	});
+	// Start SSDP discovery service
+	startDiscovery(port);
 
 	console.log(
-		`${COLOR_GREEN}FlowScore Server is running on all interfaces.${COLOR_RESET}`,
+		`${COLOR_GREEN}Server is running on all interfaces.${COLOR_RESET}`,
 	);
-
-	if (discovery) {
-		console.log(
-			`${COLOR_GREEN}Discoverable as: ${discovery.serviceName}${COLOR_RESET}\n`,
-		);
-	}
 
 	if (networkDevices.length === 0) {
 		console.log("No relevant network devices found.");
 	} else {
-		console.log(`Available on ${networkDevices.length} network device(s):\n`);
+		console.log(`\nAvailable on ${networkDevices.length} network device(s):\n`);
 
 		networkDevices.forEach((device, index) => {
 			console.log(

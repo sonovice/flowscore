@@ -14,7 +14,6 @@ FlowScore is a web application designed to receive MEI (Music Encoding Initiativ
 - **Data Format:** [MEI (Music Encoding Initiative)](https://music-encoding.org/)
 - **Real-time Communication:** WebSockets
 - **Compression:** [Pako](https://github.com/nodeca/pako) (for WebSocket message compression)
-- **Service Discovery:** [bonjour-service](https://github.com/brianc/node-bonjour) (for mDNS/DNS‑SD advertising)
 - **Frontend:** (Assumed based on `src/ui`) Likely Vite, TypeScript, potentially a framework like React/Vue/Svelte, Tailwind CSS.
 
 ## Project Structure
@@ -22,16 +21,19 @@ FlowScore is a web application designed to receive MEI (Music Encoding Initiativ
 ```
 flowscore/
 ├── docs/               # Documentation (you are here)
-├── examples/           # Example MEI files
+├── examples/           # Example MEI files and provider implementations
+│   ├── python/         # Python provider examples (including SSDP discovery)
+│   ├── java/           # Java provider examples (including SSDP discovery)
+│   └── typescript/     # TypeScript provider examples (including SSDP discovery)
 ├── src/                # Main source code
 │   ├── server/         # Server-side logic (ElysiaJS)
 │   │   ├── handlers/   # Request handlers (WebSocket, static files, stats)
 │   │   │   ├── websocket.ts # Core WebSocket logic for provider/client communication and MEI processing
 │   │   │   ├── static.ts    # Serves frontend static files
 │   │   │   └── stats.ts     # Serves server statistics
-│   │   ├── discovery.ts   # mDNS/DNS‑SD service advertising for autodiscovery
 │   │   ├── globals.ts    # Global state (e.g., app instance, connection status)
 │   │   ├── index.ts      # Server setup and startup (`serve` function)
+│   │   ├── discovery.ts  # SSDP discovery service (server-side advertising)
 │   │   └── meiHelpers.ts # Utility functions for MEI manipulation (filtering, cleaning)
 │   ├── ui/             # Frontend source code (details TBD, likely Vite-based)
 │   │   ├── public/
@@ -40,6 +42,7 @@ flowscore/
 │   │   ├── package.json
 │   │   └── vite.config.ts
 │   ├── index.ts        # Main application entry point (CLI parsing, server startup)
+│   ├── discovery-client.ts # SSDP discovery client library (for providers)
 │   └── utils.ts        # General utility functions
 ├── package.json        # Project dependencies and scripts (server)
 └── ...                 # Configuration files (.gitignore, tsconfig.json, etc.)
@@ -56,7 +59,7 @@ flowscore/
         *   `WS /ws`: Handles WebSocket connections.
     *   Applies CORS middleware.
     *   Starts listening on the specified host and port.
-    *   Advertises the broker via mDNS/DNS‑SD unless disabled by `DISABLE_MDNS`.
+    *   Starts SSDP discovery service (`startDiscovery`) to advertise the server on the local network.
 3.  **WebSocket Handling (`src/server/handlers/websocket.ts`):**
     *   **Connection (`handle_open`):**
         *   Differentiates between `provider` and `client` connections based on the `type` query parameter (`ws://host:port/ws?type=[provider|client]`).
@@ -78,27 +81,6 @@ flowscore/
         *   Resets the `providerConnected` flag if the provider disconnects.
         *   Decrements the subscription count for the client's `staves` set and removes the set if the count reaches zero.
 
-4.  **Service Discovery (`src/server/discovery.ts`):**
-    *   Publishes an mDNS/DNS‑SD (Bonjour/Zeroconf) service so providers can discover the broker on the local network automatically.
-    *   Uses the `bonjour-service` npm package for mDNS advertising.
-    *   **Service characteristics:**
-        *   Service type: `_flowscore._tcp.local.`
-        *   Service name: `FlowScore Broker (hostname:port-XXXXXX)` - includes a random 6-character alphanumeric suffix to allow multiple instances
-        *   TXT records:
-            *   `path=/ws` - WebSocket endpoint path
-            *   `role=broker` - Server role identifier
-            *   `proto=ws` - Protocol type
-    *   **Startup behavior:**
-        *   Automatically starts advertising when the server starts (unless disabled)
-        *   Returns an object with `serviceName` (for display) and `stop()` function (for cleanup)
-        *   The service name is printed to console on startup
-    *   **Configuration:**
-        *   Disabled when `DISABLE_MDNS=1` or `DISABLE_MDNS=true` environment variable is set
-        *   Cleanly unregisters the service on server shutdown (SIGINT handler)
-    *   **Implementation notes:**
-        *   Uses `crypto.randomBytes()` to generate unique service name suffixes
-        *   Service names are unique per instance, allowing multiple servers on the same network
-
 ## Frontend Overview (`src/ui/`)
 
 The frontend is a web application built using:
@@ -117,6 +99,54 @@ The main application logic resides in `src/ui/src/App.tsx`. It utilizes several 
 *   **UI/UX:** Provides a settings modal (`SettingsModal`) for configuration, uses `NoSleep.js` to prevent screen lock, and displays a connection status indicator.
 
 *(See `src/ui/src/App.tsx` and the `src/ui/src/hooks/` directory for detailed implementation.)*
+
+## Auto-Discovery (SSDP)
+
+FlowScore implements SSDP (Simple Service Discovery Protocol) for automatic server discovery on local networks. This allows providers to automatically find and connect to FlowScore servers without needing to know the server's IP address or port.
+
+### Server-Side Discovery (`src/server/discovery.ts`)
+
+The server automatically advertises itself when started:
+
+*   **Service Type:** `flowscore:broker:1`
+*   **Protocol:** SSDP over UDP multicast (address: `239.255.255.250:1900`)
+*   **Announcements:** Sends NOTIFY messages every 10 seconds
+*   **Responses:** Responds to M-SEARCH requests from providers
+*   **Multi-Interface:** Advertises on all available network interfaces
+
+The discovery service is started automatically in `src/server/index.ts` via `startDiscovery(port)`.
+
+### Client-Side Discovery (`src/discovery-client.ts`)
+
+Providers can use the discovery client library to find servers:
+
+*   **`discoverServers(timeout?)`**: Discovers all available FlowScore brokers on the network
+*   **`discoverFirstServer(timeout?)`**: Convenience function to get the first discovered server
+*   **Returns:** `DiscoveredServer` objects containing `address`, `port`, `url`, and `wsUrl`
+
+### Example Usage
+
+**TypeScript/Bun:**
+```typescript
+import { discoverFirstServer } from "./src/discovery-client.ts";
+const server = await discoverFirstServer();
+// Connect to server.wsUrl
+```
+
+**Python:**
+```python
+from discovery_example import discover_first_server
+server = discover_first_server()
+# Connect to server['ws_url']
+```
+
+**Java:**
+```java
+FlowScoreDiscovery.DiscoveredServer server = FlowScoreDiscovery.discoverFirstServer();
+// Connect to server.getWsUrl()
+```
+
+See the `examples/` directory for complete working examples in each language.
 
 ## Development Setup
 
